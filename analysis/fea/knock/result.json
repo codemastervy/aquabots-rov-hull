@@ -1,0 +1,180 @@
+{
+ "ok": true,
+ "path": "75dde284-f6af-5e0f-876b-8676f8f9c983",
+ "findings": [],
+ "summary": "solved nacelle/nacelle of 75dde284-f6af-5e0f-876b-8676f8f9c983: peak 8.5906 MPa, safety factor 5.238",
+ "measurements": {
+  "max_von_mises_MPa": 8.5906,
+  "max_von_mises_gauss_MPa": 8.7373,
+  "max_von_mises_at_mm": [
+   -27.778,
+   -30.146,
+   85.5
+  ],
+  "yield_MPa": 45.0,
+  "max_displacement_mm": 1.098953,
+  "max_displacement_at_mm": [
+   -2.006,
+   39.549,
+   115.0
+  ],
+  "applied_force_N": [
+   0.0,
+   0.0,
+   -71.4
+  ],
+  "reaction_force_N": [
+   -0.0,
+   0.0,
+   71.4
+  ],
+  "deformation_scale": 7.3,
+  "safety_factor": 5.238,
+  "checks": [
+   {
+    "kind": "stress",
+    "label": "Strength",
+    "value": 8.5906,
+    "limit": 45.0,
+    "unit": "MPa",
+    "ratio": 0.190913,
+    "close_at": 0.5,
+    "margin": 2.0,
+    "status": "passes",
+    "where": {
+     "ref": "nacelle/f:nacelle.n_icgfjp~8c61c358cc5d",
+     "at": [
+      -27.778,
+      -30.146,
+      85.5
+     ]
+    }
+   }
+  ],
+  "mesh": {
+   "elements": 14901,
+   "straightened": 7,
+   "nodes": 30200,
+   "dofs": 90600,
+   "size_mm": 4.0133,
+   "order": 2,
+   "mesher": "netgen",
+   "solver": "calculix 2.23 (C3D10)"
+  },
+  "timings": {
+   "mesh_s": 1.636,
+   "solve_s": 3.377,
+   "stress_s": 0.011
+  },
+  "study": {
+   "fixtures": [
+    {
+     "faces": [
+      "nacelle/f:nacelle.n_abkbih3~faf17b921a75",
+      "nacelle/f:nacelle.n_abkbih4~330bf778b082"
+     ],
+     "type": "fixed"
+    }
+   ],
+   "loads": [
+    {
+     "faces": [
+      "nacelle/f:nacelle.n_klfdnn~95d0de48cd27;M:nacelle.n_gppmjc"
+     ],
+     "type": "force",
+     "vector_N": [
+      0,
+      0,
+      -71.4
+     ]
+    }
+   ],
+   "margin": 2
+  },
+  "material": {
+   "name": "PETG_GENERIC",
+   "E_MPa": 2100.0,
+   "nu": 0.405,
+   "yield_MPa": 45.0,
+   "density_t_per_mm3": 1.27e-09,
+   "source": "document",
+   "ranges": {
+    "E_MPa": [
+     2000.0,
+     2200.0
+    ],
+    "nu": [
+     0.38,
+     0.43
+    ],
+    "yield_MPa": [
+     45.0,
+     53.0
+    ]
+   }
+  },
+  "fixtures": [
+   {
+    "faces": [
+     "nacelle/f:nacelle.n_abkbih3~faf17b921a75",
+     "nacelle/f:nacelle.n_abkbih4~330bf778b082"
+    ],
+    "type": "fixed",
+    "reaction_N": [
+     -0.0,
+     0.0,
+     71.4
+    ]
+   }
+  ],
+  "connections": [],
+  "overlaps": [],
+  "refined": null,
+  "named_faces": {
+   "nacelle/f:nacelle.n_abkbih3~faf17b921a75": {
+    "ref": "nacelle/f:nacelle.n_abkbih3~faf17b921a75",
+    "ordinal": 58,
+    "area": 386.8043445505725,
+    "center": [
+     -18.523257549042032,
+     -39.6,
+     57.28634293949436
+    ]
+   },
+   "nacelle/f:nacelle.n_abkbih4~330bf778b082": {
+    "ref": "nacelle/f:nacelle.n_abkbih4~330bf778b082",
+    "ordinal": 70,
+    "area": 386.8043445505721,
+    "center": [
+     21.47674245095796,
+     -39.59999999999999,
+     57.286342939494354
+    ]
+   },
+   "nacelle/f:nacelle.n_klfdnn~95d0de48cd27;M:nacelle.n_gppmjc": {
+    "ref": "nacelle/f:nacelle.n_klfdnn~95d0de48cd27;M:nacelle.n_gppmjc",
+    "ordinal": 56,
+    "area": 27357.350179604295,
+    "center": [
+     -7.030244939798536e-05,
+     0.11740813134127848,
+     57.48490316956069
+    ]
+   }
+  }
+ },
+ "status": "ok",
+ "reason": null,
+ "occurrence": "nacelle/nacelle",
+ "written": [
+  "analysis/fea/knock/result.json",
+  "analysis/fea/knock/result.glb",
+  "analysis/fea/knock/result.vtu",
+  "analysis/fea/knock/stress.png",
+  "analysis/fea/knock/displacement.png"
+ ],
+ "contact_tolerance_mm": null,
+ "parts": [],
+ "pairs": [],
+ "faces": []
+}

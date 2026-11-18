@@ -1,0 +1,103 @@
+{
+    "error_string": "Success.",
+    "export_time": 3134,
+    "layer_height": 0.20000000298023224,
+    "plate_index": 0,
+    "prepare_time": 1053,
+    "return_code": 0,
+    "sliced_plates": [
+        {
+            "feature_type_times": {
+                "Bottom surface": 533.722412109375,
+                "Bridge": 30.279632568359375,
+                "Custom": 35.168701171875,
+                "Gap infill": 3902.35595703125,
+                "Inner wall": 5087.83740234375,
+                "Internal solid infill": 1594.423095703125,
+                "Outer wall": 14750.9423828125,
+                "Overhang wall": 45.55210494995117,
+                "Sparse infill": 319.42779541015625,
+                "Top surface": 377.8384094238281,
+                "Travel": 4834.634765625,
+                "Undefined": 4818.80078125
+            },
+            "filament_change_times": 0,
+            "filaments": [
+                {
+                    "filament_id": "GFA00",
+                    "id": 1,
+                    "main_used_g": 332.3948974609375,
+                    "total_used_g": 332.3948974609375
+                }
+            ],
+            "generate_support_material_time": 2111,
+            "id": 1,
+            "infill_time": 760,
+            "layer_filament_change": 0,
+            "main_predication": 31478.35546875,
+            "make_perimeters_time": 4788,
+            "obj_cached_cnt": 0,
+            "objects": [
+                {
+                    "bbox": {
+                        "depth": 90.00000762939453,
+                        "height": 120.0,
+                        "width": 250.0,
+                        "x": 72.25108337402344,
+                        "y": 203.02020263671875,
+                        "z": 0.0
+                    },
+                    "id": 74,
+                    "name": "hull_tub.stl",
+                    "triangle_count": 26816
+                },
+                {
+                    "bbox": {
+                        "depth": 79.19383239746094,
+                        "height": 115.0,
+                        "width": 79.19999694824219,
+                        "x": 243.0511016845703,
+                        "y": 121.82623291015625,
+                        "z": 0.0
+                    },
+                    "id": 96,
+                    "name": "nacelle_x2.stl",
+                    "triangle_count": 2602
+                },
+                {
+                    "bbox": {
+                        "depth": 79.19383239746094,
+                        "height": 115.0,
+                        "width": 79.19999694824219,
+                        "x": 161.8511505126953,
+                        "y": 121.8263931274414,
+                        "z": 0.0
+                    },
+                    "id": 107,
+                    "name": "nacelle_x2.stl",
+                    "triangle_count": 2602
+                },
+                {
+                    "bbox": {
+                        "depth": 240.41348266601563,
+                        "height": 10.0,
+                        "width": 240.41348266601563,
+                        "x": -4.63139533996582,
+                        "y": 4.620456695556641,
+                        "z": 0.0
+                    },
+                    "id": 85,
+                    "name": "hull_cap.stl",
+                    "triangle_count": 5724
+                }
+            ],
+            "sliced_time": 10842,
+            "sliced_time_with_cache": 2571,
+            "total_predication": 31497.66015625,
+            "triangle_count": 37744,
+            "warning_message": "It seems object hull_tub.stl has floating cantilever. Please re-orient the object or enable support generation."
+        }
+    ],
+    "sparse_infill_density": 100.0,
+    "wall_loops": 2
+}

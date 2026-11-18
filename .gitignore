@@ -1,0 +1,6 @@
+tmp/
+print/old/
+print/*/plate_1.gcode
+print/*.log
+__pycache__/
+.DS_Store

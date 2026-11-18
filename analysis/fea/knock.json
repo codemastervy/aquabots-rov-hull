@@ -1,0 +1,1 @@
+{"fixtures":[{"faces":["nacelle/f:nacelle.n_abkbih3~faf17b921a75","nacelle/f:nacelle.n_abkbih4~330bf778b082"],"type":"fixed"}],"loads":[{"faces":["nacelle/f:nacelle.n_klfdnn~95d0de48cd27;M:nacelle.n_gppmjc"],"type":"force","vector_N":[0,0,-71.4]}],"margin":2}

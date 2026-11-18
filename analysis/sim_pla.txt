@@ -1,0 +1,28 @@
+=== v14 hydrostatics (before ballast) ===
+mass 2182 g, displacement 2433 cm3 -> lift +251 g
+ballast (steel): front 26 g, middle 245 g, rear 0 g  (bay capacity 120/280/120 g)
+mass 2452 g in air, net +15 g (positive = floats)
+CG (-4.3, -0.0, -16.4) mm   CB (-4.2, -0.0, -4.8) mm
+CB above CG by 11.6 mm; righting moment 281 mN*m per radian
+at rest after 30 s: roll 0.0 deg, pitch -0.0 deg, rising 9.0 cm/s
+
+=== steady performance (full stick) ===
+                                   v14 new   v13 old
+forward speed m/s                     1.38      0.80
+time to 90% speed s                    1.1       0.5
+reverse speed m/s                     1.15      0.67
+pitch at full forward deg             +0.4      +0.8
+spin rate deg/s                        472       403
+turn radius (fwd + half yaw) m        0.19      0.23
+up speed m/s                          0.75      0.75
+down speed m/s                        0.61      0.61
+pitch while rising deg                -0.8      +2.5
+
+=== v14 control & stability tests ===
+tilt stick at 40% (pitch mix 0.4): holds 16 deg nose down
+tilt stick at 60% (pitch mix 0.4): holds 24 deg nose down
+tilt stick at 100% (pitch mix 0.4): holds 43 deg nose down
+released on its side (90 deg roll): upright (<10 deg) after 0.5 s
+released upside down (178 deg): upright after 1.6 s
+knocked 30 deg nose-down: settles within 3 deg (for good) after 7.5 s
+coasts below 0.2 m/s 3.7 s after letting go of full forward
