@@ -1,49 +1,51 @@
-"""Shared dimensions for the Aqua Bots v14 ROV hull (mm, X forward, Y left, Z up).
+"""Aqua Bots v15: open frame + pool-noodle floats (mm, X forward, Y left, Z up, origin = frame centre).
 
-Thruster pod = the team's "motor caseing v1" print + a SEAFLO SFBP1-G1100-01 pump motor and 55 mm prop.
-Measured from motor caseing v1.stl: duct OD 64 / ID 59, cage + sleeve OD 75, sleeve ID 67,
-115 mm long (prop duct at one end, pump base in the sleeve at the other).
+Thruster pod = the team's "motor caseing v1" print + modified SEAFLO SFBP1-G1100-01 motor and 55 mm prop.
+Pod (from motor caseing v1.stl): 115 long; prop duct OD 64 at one end (25 long), a 75 OD ring next to it,
+4 cage bars, then a 75 OD sleeve (30 long) holding the pump motor at the other end.
 """
 
 # --- thruster pod (team's casing) ---
-POD_L = 115.0          # casing length
-POD_OD = 75.0          # cage / sleeve outside diameter
+POD_L = 115.0
+POD_OD = 75.0
 DUCT_OD = 64.0
-DUCT_ID = 59.0
 SLEEVE_ID = 67.0
 PROP_D = 55.0
 
-# --- hull ---
-TOP_DECK = 15.0        # foam deck above the vertical pods (buoyancy as high as possible = strong self-righting)
-H = POD_L + TOP_DECK   # hull height; vertical pods sit flush with the bottom
-TX = 56.0              # vertical tunnels at x = +-TX (front / rear)
-B = 45.0               # hull half width
-NOSE_A = 69.0          # elliptical nose / tail, measured from the tunnel centre (length = 2*(TX+NOSE_A) = 250)
-CH = 5.0               # 45 degree chamfer on the top and bottom edges
-SKIN = 0.9             # hull skin: 2 lines of a 0.4 mm nozzle (backed by foam inside)
-CAP_H = 10.0           # the cap is the top 10 mm of the hull (printed roof-down)
-Z_SPLIT = H / 2 - CAP_H
+# --- pod bands (printed rings the pods slide into, held by one zip tie each) ---
+BAND_ID = POD_OD + 1.0     # 0.5 mm clearance all round
+BAND_T = 2.4               # 6 lines of a 0.4 nozzle
+BAND_W = 14.0
+LIP_R = 31.0               # stop lip: catches the sleeve's end rim (sleeve wall is r 33.5..37.5)
+LIP_T = 1.6
 
-TUN_ID = POD_OD + 1.0  # 0.5 mm clearance round the pod
-TUN_WALL = 1.2
+# --- layout ---
+VX = 62.0                  # vertical pods at x = +-VX, y = 0, duct up, z -57.5 .. 57.5
+RAIL_Y0 = 40.0             # rails: plates y = +-(40 .. 43), touching the vertical bands
+RAIL_T = 3.0
+SY = RAIL_Y0 + RAIL_T + 1.0 + BAND_ID / 2      # side pods at y = +-82, prop duct forward
+SZ = 0.0                   # side pod axis height = the drag centre height: it stays level when driving
+RAIL_X = 105.0
+PB = -POD_L / 2            # bottom (motor end) of the vertical pods
+WIRE_GAP = 14.0            # skirt under each vertical pod: room for its wires to turn and leave sideways
+CONE_H = 7.0               # 45 degree funnel under the stop lip (prints without support)
+Z_BOT = PB - LIP_T - WIRE_GAP   # lowest point = the build plate (-73.1)
+RAIL_TOP = 36.0
 
-# --- side thruster nacelles ---
-NAC_WALL = 1.6
-NAC_RO = TUN_ID / 2 + NAC_WALL
-NAC_Y = B + NAC_RO     # nacelle tube touches the hull side
-NAC_X = 0.0            # nacelle centre; side pods face prop-forward so their heavy motors balance the camera
-BOSS_NAC_R = 5.5       # bolt bosses joining nacelle to hull
-BOLTS = [(NAC_X + sx * 28.0, sz * 20.0) for sx in (1, -1) for sz in (1, -1)]   # (x, z) of the M3 bolts (hull frame)
+# --- pool noodles: two pieces, laid along X on saddles above the side pods ---
+NOODLE_D = 65.0            # typical 6-7 cm noodle; the zip-tied saddle takes 55-75
+NOODLE_HOLE = 20.0         # hollow core (0 for a solid noodle)
+NOODLE_L = 126.0           # from analysis/sim.py (PETG frame; 125 for PLA). About 3 g of lift per mm per piece
+SADDLE_R = 33.5            # saddle inside radius
+NZ = SZ + POD_OD / 2 + 3.0 + NOODLE_D / 2        # noodle axis height (sits 3 mm above the side pod)
 
-# --- fittings ---
-BOSS_R = 3.0            # cap screw bosses in the tub (4 mm radius in the cap, where the screw head sits)
-BOSSES = [(100.0, 20.0), (100.0, -20.0), (-100.0, 20.0), (-100.0, -20.0), (0.0, 36.0), (0.0, -36.0)]
-CAM_D = 24.0           # camera bay bore (change to fit your camera)
-CAM_Z = 20.0
-CAM_DEPTH = 26.0
-TETHER_D = 10.0
-TETHER_Z = 20.0
-BALLAST_H = 14.0       # bottom 12 mm of the hull = ballast bays (steel nuts / washers / fishing weights)
+# --- wiring ---
+TETHER_D = 14.0            # tether channel (fits up to 14 mm)
+CAMCABLE_D = 7.0           # camera cable channel beside it
+TOWER_TOP = 72.0           # tether clamp height: above the rear pod's duct, close to the floats' height
+TRAY_H = 12.0              # splice tray: floor on the build plate between the vertical pods (low walls: less drag)
 
-# --- foam ---
-FOAM_Z0 = -H / 2 + SKIN + BALLAST_H   # foam fills the hull above the ballast bays
+# --- camera shelf (front) ---
+CAM_SHELF = (108.0, 144.0)  # x range
+CAM_W = 40.0
+CAM_Z = -6.0               # shelf top

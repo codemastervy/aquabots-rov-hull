@@ -1,108 +1,81 @@
 {
  "ok": true,
- "path": "75dde284-f6af-5e0f-876b-8676f8f9c983",
- "findings": [
-  {
-   "severity": "warning",
-   "code": "low_margin",
-   "message": "It holds, but only 1.5\u00d7 the load: under the 2\u00d7 margin",
-   "location": "nacelle/f:nacelle.n_icgfjp~8c61c358cc5d",
-   "hint": "safety factor 1.5, margin 2",
-   "items": [],
-   "rule": null,
-   "value": null,
-   "limit": null,
-   "unit": null,
-   "op": null,
-   "source": null,
-   "refs": []
-  },
-  {
-   "severity": "warning",
-   "code": "large_displacement",
-   "message": "It moves 2.62 mm, about 2% of its size: check the fit if it mates with another part",
-   "location": "(12.561, 37.555, 0)",
-   "hint": "maximum displacement 2.616 mm, bounding-box diagonal 160.5 mm",
-   "items": [],
-   "rule": null,
-   "value": null,
-   "limit": null,
-   "unit": null,
-   "op": null,
-   "source": null,
-   "refs": []
-  }
- ],
- "summary": "solved nacelle/nacelle of 75dde284-f6af-5e0f-876b-8676f8f9c983: peak 26.4506 MPa, safety factor 1.512",
+ "path": "57e0a685-ddd5-5b07-8110-d83b3296390d",
+ "findings": [],
+ "summary": "solved frame/frame of 57e0a685-ddd5-5b07-8110-d83b3296390d: peak 1.1213 MPa, safety factor 40.132",
  "measurements": {
-  "max_von_mises_MPa": 26.4506,
-  "max_von_mises_gauss_MPa": 26.6971,
+  "max_von_mises_MPa": 1.1213,
+  "max_von_mises_gauss_MPa": 1.1115,
   "max_von_mises_at_mm": [
-   -27.778,
-   -30.09,
-   85.5
+   23.5,
+   2.0,
+   35.013
   ],
-  "yield_MPa": 40.0,
-  "max_displacement_mm": 2.616127,
+  "yield_MPa": 45.0,
+  "max_displacement_mm": 0.014869,
   "max_displacement_at_mm": [
-   12.561,
-   37.555,
-   0.0
+   20.0,
+   19.0,
+   72.0
   ],
   "applied_force_N": [
-   -47.6,
    0.0,
-   0.0
+   0.0,
+   42.0
   ],
   "reaction_force_N": [
-   47.6,
+   0.0,
    -0.0,
-   -0.0
+   -42.0
   ],
-  "deformation_scale": 3.1,
-  "safety_factor": 1.512,
+  "deformation_scale": 1300.0,
+  "safety_factor": 40.132,
   "checks": [
    {
     "kind": "stress",
     "label": "Strength",
-    "value": 26.4506,
-    "limit": 40.0,
+    "value": 1.1213,
+    "limit": 45.0,
     "unit": "MPa",
-    "ratio": 0.661376,
+    "ratio": 0.024918,
     "close_at": 0.5,
     "margin": 2.0,
-    "status": "close",
+    "status": "passes",
     "where": {
-     "ref": "nacelle/f:nacelle.n_icgfjp~8c61c358cc5d",
+     "ref": "frame/f:frame.f_kelhgg~4a14305be886",
      "at": [
-      -27.778,
-      -30.09,
-      85.5
+      23.5,
+      2.0,
+      35.013
      ]
     }
    }
   ],
   "mesh": {
-   "elements": 20072,
+   "elements": 20540,
    "straightened": 2,
-   "nodes": 40550,
-   "dofs": 121650,
-   "size_mm": 3.3924,
+   "nodes": 45673,
+   "dofs": 137019,
+   "size_mm": 9.4629,
    "order": 2,
    "mesher": "netgen",
    "solver": "calculix 2.23 (C3D10)"
   },
   "timings": {
-   "mesh_s": 1.968,
-   "solve_s": 4.89,
-   "stress_s": 0.016
+   "mesh_s": 3.352,
+   "solve_s": 3.218,
+   "stress_s": 0.015
   },
   "study": {
    "fixtures": [
     {
      "faces": [
-      "nacelle/f:nacelle.n_abkbih3~faf17b921a75",
-      "nacelle/f:nacelle.n_abkbih4~330bf778b082"
+      "frame/f:frame.f_kelhgg2~ce15471948a1",
+      "frame/f:frame.f_kelhgg~4a14305be886",
+      "frame/f:frame.f_gcakgn2~63c7a262238f",
+      "frame/f:frame.f_gcakgn2~14aa6a1ac46f",
+      "frame/f:frame.f_gcakgn~d3eae1c6538c",
+      "frame/f:frame.f_gcakgn~47f7971df345"
      ],
      "type": "fixed"
     }
@@ -110,96 +83,146 @@
    "loads": [
     {
      "faces": [
-      "nacelle/f:nacelle.n_klfdnn~95d0de48cd27;M:nacelle.n_gppmjc"
+      "frame/f:tether_tower.t_eapobj~f2ff17693768",
+      "frame/f:tether_tower.t_oahkki~81f96cee2650"
      ],
      "type": "force",
      "vector_N": [
-      -47.6,
       0,
-      0
+      0,
+      42
      ]
     }
    ],
-   "margin": 2,
    "material": {
-    "name": "PLA (generic, conservative)",
-    "E_MPa": 3500,
+    "name": "PLA (FDM, conservative)",
+    "E_MPa": 3000,
     "nu": 0.36,
-    "yield_MPa": 40
-   }
+    "yield_MPa": 45
+   },
+   "margin": 2
   },
   "material": {
-   "name": "PLA (generic, conservative)",
-   "E_MPa": 3500.0,
+   "name": "PLA (FDM, conservative)",
+   "E_MPa": 3000.0,
    "nu": 0.36,
-   "yield_MPa": 40.0,
+   "yield_MPa": 45.0,
    "density_t_per_mm3": 0.0,
    "source": "study"
   },
   "fixtures": [
    {
     "faces": [
-     "nacelle/f:nacelle.n_abkbih3~faf17b921a75",
-     "nacelle/f:nacelle.n_abkbih4~330bf778b082"
+     "frame/f:frame.f_kelhgg2~ce15471948a1",
+     "frame/f:frame.f_kelhgg~4a14305be886",
+     "frame/f:frame.f_gcakgn2~63c7a262238f",
+     "frame/f:frame.f_gcakgn2~14aa6a1ac46f",
+     "frame/f:frame.f_gcakgn~d3eae1c6538c",
+     "frame/f:frame.f_gcakgn~47f7971df345"
     ],
     "type": "fixed",
     "reaction_N": [
-     47.6,
+     0.0,
      -0.0,
-     -0.0
+     -42.0
     ]
    }
   ],
   "connections": [],
   "overlaps": [],
-  "refined": {
-   "from_size_mm": 4.0133,
-   "from_max_von_mises_MPa": 25.7705,
-   "size_mm": 3.3924,
-   "max_von_mises_MPa": 26.4506
-  },
+  "refined": null,
   "named_faces": {
-   "nacelle/f:nacelle.n_abkbih3~faf17b921a75": {
-    "ref": "nacelle/f:nacelle.n_abkbih3~faf17b921a75",
-    "ordinal": 58,
-    "area": 386.8043445505725,
+   "frame/f:frame.f_kelhgg2~ce15471948a1": {
+    "ref": "frame/f:frame.f_kelhgg2~ce15471948a1",
+    "ordinal": 149,
+    "area": 12420.65307702851,
     "center": [
-     -18.523257549042032,
-     -39.6,
-     57.28634293949436
+     -61.949410621773204,
+     -0.05058937822678811,
+     -8.610272201265913
     ]
    },
-   "nacelle/f:nacelle.n_abkbih4~330bf778b082": {
-    "ref": "nacelle/f:nacelle.n_abkbih4~330bf778b082",
-    "ordinal": 70,
-    "area": 386.8043445505721,
+   "frame/f:frame.f_kelhgg~4a14305be886": {
+    "ref": "frame/f:frame.f_kelhgg~4a14305be886",
+    "ordinal": 49,
+    "area": 12420.653077028515,
     "center": [
-     21.47674245095796,
-     -39.59999999999999,
-     57.286342939494354
+     61.9494106217732,
+     -0.05058937822679521,
+     -8.610272201265936
     ]
    },
-   "nacelle/f:nacelle.n_klfdnn~95d0de48cd27;M:nacelle.n_gppmjc": {
-    "ref": "nacelle/f:nacelle.n_klfdnn~95d0de48cd27;M:nacelle.n_gppmjc",
-    "ordinal": 56,
-    "area": 27357.350179604295,
+   "frame/f:frame.f_gcakgn2~63c7a262238f": {
+    "ref": "frame/f:frame.f_gcakgn2~63c7a262238f",
+    "ordinal": 322,
+    "area": 2494.982264150982,
     "center": [
-     -7.030244939798536e-05,
-     0.11740813134127848,
-     57.48490316956069
+     27.0,
+     -81.84500493754857,
+     -11.555747299564825
+    ]
+   },
+   "frame/f:frame.f_gcakgn2~14aa6a1ac46f": {
+    "ref": "frame/f:frame.f_gcakgn2~14aa6a1ac46f",
+    "ordinal": 396,
+    "area": 2506.9909375646544,
+    "center": [
+     -50.5,
+     -82.0,
+     -11.404006671323362
+    ]
+   },
+   "frame/f:frame.f_gcakgn~d3eae1c6538c": {
+    "ref": "frame/f:frame.f_gcakgn~d3eae1c6538c",
+    "ordinal": 498,
+    "area": 2494.9822641509827,
+    "center": [
+     27.000000000000004,
+     81.84500493754857,
+     -11.55574729956481
+    ]
+   },
+   "frame/f:frame.f_gcakgn~47f7971df345": {
+    "ref": "frame/f:frame.f_gcakgn~47f7971df345",
+    "ordinal": 436,
+    "area": 2506.9909375646553,
+    "center": [
+     -50.5,
+     82.00000000000001,
+     -11.404006671323348
+    ]
+   },
+   "frame/f:tether_tower.t_eapobj~f2ff17693768": {
+    "ref": "frame/f:tether_tower.t_eapobj~f2ff17693768",
+    "ordinal": 11,
+    "area": 942.4777960769381,
+    "center": [
+     -8.104524521655171e-16,
+     -4.999999999999999,
+     67.22535170724315
+    ]
+   },
+   "frame/f:tether_tower.t_oahkki~81f96cee2650": {
+    "ref": "frame/f:tether_tower.t_oahkki~81f96cee2650",
+    "ordinal": 13,
+    "area": 502.65482457436684,
+    "center": [
+     -1.4489193548889357e-15,
+     12.0,
+     69.45352091052968
     ]
    }
   }
  },
  "status": "ok",
  "reason": null,
- "occurrence": "nacelle/nacelle",
+ "occurrence": "frame/frame",
  "written": [
-  "analysis/fea/lift_pla/result.json",
-  "analysis/fea/lift_pla/result.glb",
-  "analysis/fea/lift_pla/result.vtu",
-  "analysis/fea/lift_pla/stress.png",
-  "analysis/fea/lift_pla/displacement.png"
+  "./analysis/fea/lift_pla/result.json",
+  "./analysis/fea/lift_pla/result.glb",
+  "./analysis/fea/lift_pla/result.vtu",
+  "./analysis/fea/lift_pla/stress.png",
+  "./analysis/fea/lift_pla/displacement.png"
  ],
  "contact_tolerance_mm": null,
  "parts": [],

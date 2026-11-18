@@ -1,161 +1,156 @@
-# Aqua Bots v14: streamlined ROV hull
+# Aqua Bots ROV v15: open frame + pool noodles
 
-![v14 hull](docs/rov_v14_iso.png)
+One printed frame, four of our thruster pods, two pieces of pool noodle and a bag of zip ties.
+There are no screws, glue, ballast, foam blocks or sealed hull.
 
-A new hull for the team's 4 thruster pods: the modified SEAFLO 1100 GPH pumps (strainer removed, 55 mm prop) in the
-team's "motor caseing v1" print. The thruster layout is the same as before (2 vertical, front and rear; 2 side), so
-`rov.py` and the controller profiles work unchanged apart from one setting (see **Software**).
+![v15 assembled](docs/rov_v15_iso.png)
 
-- **Size:** 250 x 247 x 130 mm (the old frame was 248 x 269 x 69 plus the pods sticking out).
-- **Weight:** about 2.45 kg ready to dive.
-- **Buoyancy:** slightly positive (+15 g), so it floats up gently if anything fails.
+It uses the same four thrusters as the current robot: modified SEAFLO SFBP1-G1100-01 1100 GPH bilge-pump motors with
+55 mm props, in our "motor caseing v1" print. Motor numbering is unchanged: **1 rear-up, 2 front-up, 3 right, 4 left**.
 
-## What the tests showed
+| | |
+|---|---|
+| Printed parts | 1 (the frame), 249 × 245 × 146 mm, fits the H2S plate |
+| Filament | PETG 382 g or PLA 388 g, about 10.5 h on a Bambu H2S |
+| Hardware | about 20 zip ties (2.5 mm wide, 150-200 mm long) |
+| Floats | 2 × 126 mm of standard pool noodle (65 mm, hollow) |
+| Mass in air | about 2.2 kg with pods, camera and wiring |
+| Trim | slightly positive at the surface (+15 g); level; self-rights |
 
-These are simulations of the design. Real pool numbers will differ: see **Assumptions**.
+The previous design (v14: flooded streamlined hull with foam and steel ballast) is on the
+[`v14-flooded-hull`](../../tree/v14-flooded-hull) branch.
 
-| Test | v14 (new) | v13 (old frame) |
+## Why this design
+
+We based it on what already works:
+
+* **Our current robot**: the same 4-thruster layout, the same pods and the same control software (see the change to `config.toml` below).
+* **SeaPerch**, the standard school ROV: pool-noodle floats, bilge-pump motors, an open frame, and trimming by sliding the floats.
+* **BlueROV2**: an open frame with the buoyancy on top and the weight low, so it rights itself. The tether is clamped to the frame so a pull never reaches the wires.
+
+Pool noodles are the float because we already have them, they cost nothing and they're easy to cut. Trimming is done
+in the pool by changing the noodle length and sliding the noodles forward or back. No ballast is needed.
+
+## Print it
+
+Open `print/petg/rov_v15_PETG.gcode.3mf` (or `print/pla/rov_v15_PLA.gcode.3mf`) in Bambu Studio and send it to the printer.
+To slice it yourself, use `3MF/frame.3mf` or `STL/frame.stl` with these settings:
+
+| Setting | Value | Why |
 |---|---|---|
-| Top speed forward | **1.38 m/s** | 0.80 m/s |
-| Reverse | **1.15 m/s** | 0.67 m/s |
-| Forward drag area (Cd x A) | **0.010 m2** | 0.031 m2 |
-| Pitch at full forward | +0.4 deg (stays level) | +0.8 deg |
-| Pitch while rising | -0.8 deg | +2.5 deg |
-| Up / down speed | 0.75 / 0.61 m/s | 0.75 / 0.61 m/s |
-| Turn radius (full forward, half turn) | 0.19 m | 0.23 m |
-| Tilt stick at 40 / 60 / 100 % | 16 / 25 / 44 deg, never loops | - |
-| Rights itself from upside down | 1.6 s | - |
-| Rights itself from on its side | 0.5 s | - |
-| Centre of buoyancy above centre of gravity | 11.4 mm | - |
+| Printer / process | Bambu Lab H2S 0.4 nozzle, 0.20 mm Standard | |
+| Filament | Bambu PETG HF (best) or PLA Basic | PETG copes better with sun, knocks and water; PLA is fine for pool sessions |
+| Plate | **Textured PEI** | Bambu Studio won't put PETG on the Cool Plate |
+| Infill | **100 %**, zig-zag (rectilinear) | Thin walls; solid parts don't soak up water |
+| Walls | 3 loops | |
+| Supports | **off** | Every window has a pointed (45°) top and the pod lips sit on 45° funnels |
+| Brim | auto | |
+| Orientation | as exported: tray and skirts on the plate | |
 
-**Strength.** A nacelle carrying twice the whole robot's weight (lifting it by one nacelle) gives a safety factor of 1.7
-in PETG and 1.5 in PLA. A 71 N fore-and-aft knock gives 5.2 (PETG) and 4.4 (PLA). The pods inside make the nacelles
-stiffer still. This is a linear static check, not an impact test, so don't throw it.
+The printability check passed with no errors (79 mm² of small overhangs and 16 mm bridges, both fine on an H2S).
+Let it cool on the plate before you take it off.
 
-**Printability.** Every part passes the FDM check for an H2S with no supports. The hull print has about 3 cm3 of
-sagging overhang at 45 degree chamfers, which the slicer handles.
+## Build it
 
-Both **PETG and PLA** work. PETG is better for repeated pool use; PLA is fine for a season. The ballast changes by
-about 10 g between them.
+![frame](docs/frame_iso.png)
+
+### 1. Pods (4 zip ties)
+* **Up/down pods (front motor 2, rear motor 1)**: drop in from the top, **prop duct up, motor down**. They sit on a
+  lip 14 mm above the table. Under the lip is a skirt with a notch facing the middle of the robot. The motor wires leave
+  through that notch, so they aren't pinched under the pod. Put one zip tie through the two slots near the top of the tube
+  and around a cage bar of the pod.
+* **Side pods (motor 4 left, motor 3 right)**: slide in from the front, **prop duct forward**, until the motor
+  sleeve stops on the rear lip. Put one zip tie through the front band's slots and around a cage bar.
+
+### 2. Wiring
+* **Splice tray**: the floor between the up/down pods, with low walls and drain holes. Lay the 8 motor-wire-to-tether
+  splices (heat-shrunk) here and hold them down with 2 zip ties through the floor slots. They stay low, which helps
+  the robot right itself, and they're kept out of the props.
+* **Wire clips**: 7 slots along the top of each side rail. Zip-tie the side-pod leads along the rail to the tray.
+* **Tether + camera post**: the post in the middle rises to 72 mm with two grooves along the robot. The big groove takes
+  the tether (up to 14 mm), the small one the camera cable (up to 7 mm). Put one zip tie through each pair of slots and
+  pull it tight. **Leave a slack loop between the post and the tray**: if someone pulls the tether, the post takes the load, not the
+  splices. The post is high and central, so a pull doesn't tip the robot nose-down.
+
+### 3. Camera
+The shelf at the front (36 × 40 mm, 4 zip-tie slots) is in front of and below the front up/down pod, so the props stay
+out of the picture. The bumper in front protects the lens. Zip-tie the camera down and run its cable along the rail
+to the post.
+
+### 4. Pool noodles (4 zip ties)
+1. Cut **two pieces 126 mm long** from a 65 mm noodle (125 mm for a PLA frame). A bread knife works well. Round or taper
+   the ends if you like: it cuts drag a little and makes no difference to the lift.
+2. Lay them in the saddles above the side pods, **centred 4 mm behind the middle of the frame** (the piece runs from 67 mm
+   behind centre to 59 mm in front).
+3. Zip-tie each piece through the two saddle slots. Don't crush the foam.
+
+The saddles take any noodle from 55 to 75 mm. Different noodles float differently, so plan to trim in the pool:
+
+### 5. Trim in the pool (10 minutes)
+* **Sinks** → add noodle length (each 1 mm on both pieces ≈ 6 g of lift), or use fatter noodle.
+* **Shoots up** → cut the noodles shorter. Aim for it to rise slowly, about a hand-length every 2 s.
+* **Nose down** → slide both noodles forward. **Nose up** → slide them back.
+* **Leans to one side** → slide that side's noodle outward or make it a little longer.
+
+Noodle foam squashes with depth (about 4% at 1 m, 12% at 3 m). The robot becomes slightly heavy below about 0.5 m
+(−15 g at 1 m, −75 g at 3 m), which the up thrusters easily cover. Lose power at depth and it **sinks slowly**,
+so pull it back on the tether. In a school pool (≤ 2 m) this doesn't matter.
+
+### 6. Software
+Set the pitch mix on the front/rear motors to **±0.4** in `config.toml`, the same as for v14. At full pitch gain
+(1.0) a full-tilt stick flips the robot over. At 0.4 a full stick holds about 20° of tilt. Nothing else changes.
+(The autopilot stays off the controller, as before.)
+
+## How we know it works
+
+All numbers below come from simulation and analysis, not a pool test yet. Weigh one pod and test it in the pool before you trust them.
+
+**6-DOF simulation** (`analysis/sim.py`; it models buoyancy, drag on every part, added mass and thruster lag):
+
+| | v15 | old v13 |
+|---|---|---|
+| Forward / reverse | 0.70 / 0.59 m/s | 0.80 / 0.67 m/s |
+| Up / down | 0.60 / 0.49 m/s | 0.75 / 0.61 m/s |
+| Pitch at full forward | −0.8° | +0.8° |
+| Spin | 412 °/s | 403 °/s |
+| Turn radius (fwd + half yaw) | 0.17 m | 0.23 m |
+| Centre of buoyancy above centre of gravity | 28 mm | |
+| Upright from upside down / on its side | 1.2 s / 0.4 s | |
+
+v15 is **about 10–20 % slower** than the old robot in a straight line, because the exposed pods and floats make more drag.
+In return it turns tighter, rights itself, sits level, and is one print plus zip ties. Drag is the least certain
+number in the model, so in the pool the gap could be bigger or smaller.
+
+**Strength (FEA, CalculiX)**: the frame is held at the pod bands, with the load on the tether post.
+
+| Load case | PETG safety factor | PLA safety factor |
+|---|---|---|
+| Lifting the whole robot (2.2 kg × 2) by the tether | 35 | 40 |
+| 30 N sideways yank on the tether | 17 | 19 |
+
+Material values used are conservative for printed parts (PETG yield 40 MPa, PLA 45 MPa).
+
+**Fit**: the full assembly (frame, 4 pods, 2 noodles) passes an interference check, so no two parts overlap.
+
+## Assumptions to check
+* Pump motor ≈ 300 g per pod (stock 350 g minus the strainer base) and thrust ≈ 5 N forward / 3.5 N reverse. **Weigh a pod and adjust `analysis/sim.py`.**
+* Pool noodle: 65 mm OD, 20 mm hole, about 30 kg/m³ foam.
+* Camera ≈ 35 g. The splices and wiring in the tray ≈ 60 g.
+* Tether near neutral in water. A heavy tether pulls the back down: slide the noodles back a bit.
 
 ## Files
 
-| File | What it is |
+| Path | What |
 |---|---|
-| `print/petg/rov_v14_PETG.gcode.3mf` | **Ready to print**: whole set, one plate, H2S, Bambu PETG HF, 0.20 mm, Textured PEI. 327 g, 8 h 52 min |
-| `print/pla/rov_v14_PLA.gcode.3mf` | Same in Bambu PLA Basic. 332 g, 8 h 45 min |
-| `3MF/*.3mf`, `STL/*.stl` | Each part on its own, already turned the right way up for printing |
-| `STEP/` | Each part plus the whole assembly, for any CAD program |
-| `DXF/foam_template_*_1to1.svg` | Foam cutting templates. Print at 100 % scale (they are in mm) |
-| `rov_v14.sc` | The SolidCraft version (open in SolidCraft). Bodies HullTub, HullCap, Nacelle_L, Nacelle_R, within 0.6 % of the print files. Parameters TX, B, NOSE_A, H, CH, SKIN, CAP_H, TUN_ID, TUN_WALL, NAC_WALL, POD_L, BOSS_R, FLOOD_D drive the hull, tunnels and nacelle tube; hole, boss and camera positions are fixed numbers in their sketches |
-| `src/` | The text-to-cad model (`params.py` holds every dimension) |
-| `analysis/` | The simulation (`sim.py`, results in `sim_petg.txt` / `sim_pla.txt`), mass properties, strength studies (`fea/`, with stress pictures) |
-| `docs/` | Pictures and a 3D view of the assembly (`rov_v14.glb`) |
-| `ref/` | The old v13 frame and the motor casing, for comparison |
+| `src/params.py` | every dimension (change things here) |
+| `src/rov.py` | the frame and assembly (build123d, run with `cad run src/rov.py`) |
+| `src/print_parts.py` | the frame placed for printing |
+| `rov_v15.sc` | the same frame in **SolidCraft**, parametric (`ZB`, `WIRE_GAP`, `VX`, `BAND_ID` …) |
+| `STL/`, `3MF/`, `STEP/` | exports (`STEP/rov_v15_assembly.step` = everything together) |
+| `print/` | sliced files for PETG and PLA, the Bambu presets, and `flatten.py`, which rebuilds the presets |
+| `analysis/` | simulation (`sim.py`, results `sim_petg.txt` / `sim_pla.txt`), mass properties, FEA studies + results |
+| `docs/` | pictures and `rov_v15.glb` (3D view) |
+| `ref/` | our current robot (`aqua_bots_v13.stl`) and pod (`motor_caseing_v1.stl`) |
 
-**To rebuild the models:** install [text-to-cad](https://texttocad.dev), then `cad run src/rov.py` and `cad run src/print_parts.py`. The simulation is `cad run analysis/sim.py` (`--pla` for PLA).
-
-## Print settings
-
-Open the `.gcode.3mf` in Bambu Studio and send it. To slice it yourself, these are the settings that matter:
-
-| Setting | Value |
-|---|---|
-| Printer | Bambu Lab H2S, 0.4 mm nozzle |
-| Profile | 0.20 mm Standard |
-| Walls | 2 |
-| Infill | **100 %**, zig-zag |
-| Supports | Off |
-| Plate | Textured PEI |
-| Brim | Auto |
-
-Use **100 % infill** for every part. Air trapped in sparse infill leaks out slowly underwater, so the buoyancy keeps
-changing and the trim drifts. The walls are only 2 to 4 lines thick anyway, so 100 % costs almost nothing.
-
-**Orientation:**
-
-- **Hull tub:** floor down.
-- **Hull cap:** roof down.
-- **Nacelles:** stood on end. Print **2**.
-
-## Parts list
-
-| Qty | Part | Use |
-|---|---|---|
-| 1 | hull_tub, hull_cap | printed |
-| 2 | nacelle | printed (the same part both sides, the right one turned over) |
-| 6 | M3 x 16 self-tapping (or machine) screw | cap to tub |
-| 8 | M3 x 12 screw + M3 nut | nacelles to hull |
-| 6 | M3 x 8 self-tapping screw | stop the pods sliding out (1 per tunnel, 2 per nacelle) |
-| about 1 L | closed-cell foam: XPS insulation board (pink/blue), 20 or 25 mm | buoyancy. **Not** polystyrene beads (they soak up water) and not pool noodle (it crushes) |
-| about 300 g | steel nuts / washers (M6-M10) or lead fishing sinkers | ballast |
-| | epoxy or hot glue, zip ties, marine grease | |
-
-## Build
-
-1. **Pods.** Slide a vertical pod into each tunnel, **prop duct up, motor end flush with the bottom**. Fix each with an
-   M3 x 8 self-tapper through the small hole in the tunnel wall (inside the middle compartment) into the pod's sleeve.
-2. **Side pods.** Slide each side pod into a nacelle **prop duct forward**. Fix them with M3 x 8 screws through the top
-   and bottom holes near the front. Prop-forward puts the heavy motor at the back, which balances the camera in the nose.
-3. **Nacelles to hull.**
-   - Drop an M3 nut into each of the 4 slots in each nacelle's bolt bosses.
-   - Bolt the nacelle to the hull side from inside the hull with M3 x 12 screws.
-   - Run the pod wires through the 8 mm hole in the middle of the joint into the hull.
-4. **Wiring.**
-   - Vertical pod wires enter through the 8 mm holes in the tunnel walls.
-   - All the wires and the camera cable leave through the tether tube in the tail.
-   - Put a cable tie round the tether just inside the tube so a pull on the tether doesn't pull the wires.
-5. **Camera.** The nose bay takes a camera up to 24 mm across and 26 mm long, looking forward.
-   - A different camera means a different `CAM_D` / `CAM_DEPTH` in `params.py`, or in the SolidCraft parameters.
-   - The camera must be waterproof itself: the hull floods.
-6. **Ballast.** The bottom 14 mm of the hull is the ballast bay. Start with about **25 g in the front bay** and
-   **about 235 g in the middle bay**, nothing in the rear. Glue or zip-tie it down.
-7. **Foam.** Cut the foam to the templates and fill the hull above the ballast.
-   - **Main block:** about 103 mm tall, stacked from sheets. Leave the tunnels, bosses and camera bay clear (the
-     template shows the outline at mid-height).
-   - **Cap sheet:** about 8 mm, glued into the cap.
-   - Rounding a few mm off the foam edges makes it slide in.
-8. **Cap.** Screw the cap on with the 6 M3 x 16 screws.
-
-**The hull is meant to flood.** Water comes in through the holes in the floor and roof; the foam does the floating.
-Don't seal it.
-
-## Trimming in the pool (do this once)
-
-1. Put it in the water with the motors off.
-2. **It should float up slowly**, about 10 cm/s, and sit level. Then add or remove steel in the bays:
-   - **Shoots up:** add ballast to the middle bay.
-   - **Sinks:** take ballast out, or add a little foam.
-   - **Nose down:** move ballast from the front bay to the rear bay.
-   - **Nose up:** move ballast from the rear bay to the front bay.
-3. **The tether** pulls the tail. Tape small floats on the tether near the robot until it hangs neutral.
-
-The numbers above assume each modified pump weighs about 300 g. Weighing one pod before the build makes the first
-trim close: if the pod is heavier than 450 g, expect less ballast; if lighter, more.
-
-## Software (one setting)
-
-The new hull is stable but light on pitch. At the old tilt strength, full tilt makes it loop over. On the Pi or
-laptop, edit `config.toml` (it is kept through updates):
-
-- **Front-up motor:** change `pitch = 1.0` to `pitch = 0.4`.
-- **Rear-up motor:** change `pitch = -1.0` to `pitch = -0.4`.
-
-Leave the other motors as they are. Full tilt is then about 44 degrees and it springs back level when you let go.
-
-**Side thrusters.** If the side thrusters push it backwards after the change to prop-forward, use SETUP > MOTORS >
-FLIP on motors 3 and 4. Each prop pushes harder one way. The side ones should push forward in their strong direction,
-so swap the prop round if needed.
-
-## Assumptions (what to measure to make the numbers exact)
-
-| Assumption | Used | How to check |
-|---|---|---|
-| Pump motor (strainer removed) | 300 g, displaces 184 cm3 | Weigh one pod in air and hanging in water |
-| Thrust per thruster | 5.0 N forward, 3.5 N reverse | Pull against a luggage scale in the pool |
-| Camera | 35 g | Weigh it |
-| Drag coefficients | 0.30 hull, 1.2 old frame, 0.8 pods | Measure top speed over 5 m in the pool |
-| Steady water, no tether pull | | |
-
-The speeds scale with thrust: 20 % less thrust means about 10 % less speed, for both designs. The comparison between
-old and new holds either way.
+Sources for design ideas: REA "ROV Buoyancy & Ballast" guide (learning.rea.org.au), RoboNation SeaPerch team
+engineering notebooks, BlueROV2 frame layout.
