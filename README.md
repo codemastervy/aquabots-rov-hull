@@ -77,9 +77,24 @@ The pods, noodles and frame don't overlap. At depth the noodles squash: −15 g 
 
 Assumptions to check: pump motor 300 g, thrust 5 N forward / 3.5 N reverse, camera 35 g. Weigh a pod.
 
+## SolidCraft
+`rov_v16.sc` is the same frame as a parametric SolidCraft design (`docs/solidcraft.png`):
+- Its parameters have the same names as `src/params.py`.
+- `solidcraft/build_v16.py` writes the build steps (`solidcraft/rov_v16_steps.json`), so it can be rebuilt after a change.
+
+| | |
+|---|---|
+| Body | 1 solid, same size as the CAD model |
+| Volume | 296.2 cm³ (CAD 297.9 cm³: the window corners are sharp instead of rounded) |
+| Follows the parameters | rings, bores, plates' outlines, decks, cross bar, post, shelf |
+| Fixed numbers | the window shapes and the angled walls' planes |
+
+Changing several parameters at once was tested and still gives one clean body.
+
 ## Files
 - `src/params.py`: every dimension
 - `src/rov.py`: the model (`cad run src/rov.py`)
+- `rov_v16.sc`, `solidcraft/`: the SolidCraft version
 - `STL/`, `3MF/`, `STEP/`: exports
 - `print/`: the sliced files
 - `analysis/`: simulation and FEA
