@@ -1,9 +1,15 @@
-"""Aqua Bots v15 ROV: one printed frame, four thruster pods, two pool-noodle floats.
+"""Aqua Bots v16 "classic" ROV: the shape of our v13 frame, redone so it floats, rights itself,
+holds the wiring and prints without supports.
 
-Printed in one piece, no supports. The only hardware is zip ties:
-- the pods slide into printed bands and each is locked by a zip tie round one of its cage bars
-- the noodles sit in saddles above the side pods, zip-tied over the top
-- the tether, camera cable and splices are zip-tied to the tower, the rails and the splice tray
+What it keeps from v13: a flat frame as tall as a side ring, two rails between the up/down rings,
+diamond braces out to a box cross bar that ends in the two side rings, triangle-truss windows, round
+cable tubes where the rails cross the cross bar. Like v13 it grips each pod by its 64 mm prop duct.
+
+What is new:
+- pool-noodle floats in two saddles on top of the cross bar (buoyancy high: it rights itself)
+- the up/down rings sit on the build plate; the pods hang below with their heavy motors low
+- tether + camera-cable clamp post (rear), camera shelf (front), splice tray (bottom deck)
+- zip-tie lugs on every ring: no screws, no glue
 
 Build: cad run src/rov.py
 """
@@ -12,17 +18,18 @@ import math
 import build123d as bd
 from cad import model
 
-from params import (CONE_H, PB, BAND_ID, BAND_T, BAND_W, CAM_SHELF, CAM_W, CAM_Z, CAMCABLE_D, DUCT_OD, LIP_R, LIP_T, NOODLE_D,
-                    NOODLE_HOLE, NOODLE_L, NZ, POD_L, POD_OD, PROP_D, RAIL_T, RAIL_TOP, RAIL_X, RAIL_Y0, SADDLE_R,
-                    SLEEVE_ID, SY, SZ, TETHER_D, TOWER_TOP, TRAY_H, VX, Z_BOT)
+from params import (BRACE_Y, CAM_W, CAM_X, CB, DECK_T, DUCT_L, DUCT_OD, FULL_X, NOODLE_D, NOODLE_HOLE, NOODLE_L,
+                    NY, NZ, PLATE_T, POD_OD, POST_X, PROP_D, R_IN, R_OUT, RAIL_Y, RING_L, SADDLE_R, SLEEVE_ID, SY,
+                    SZ, TOWER_TOP, VX, Z_BOT, Z_TOP)
 
 ORANGE = "#f28c28"
 WHITE = "#e8e8e8"
 RED = "#c0392b"
 GREY = "#555555"
 YELLOW = "#f4d03f"
-R_IN, R_OUT = BAND_ID / 2, BAND_ID / 2 + BAND_T
 S2 = math.sqrt(2.0)
+RING_TOP = Z_BOT + RING_L          # top of the up/down rings (-9.7)
+FILLET = 2.0                       # window corner radius
 
 
 # ---------------------------------------------------------------- helpers
@@ -39,201 +46,213 @@ def x_cyl(r, x0, x1, y=0.0, z=0.0):
     return bd.Pos(x0, y, z) * bd.Rot(0, 90, 0) * bd.Cylinder(r, x1 - x0, align=(bd.Align.CENTER, bd.Align.CENTER, bd.Align.MIN))
 
 
-def tear_x(r, x0, x1, y=0.0, z=0.0, up=True, down=False):
-    """Cylinder along X with 45 degree points up and/or down: prints without supports."""
-    s = x_cyl(r, x0, x1, y, z)
-    diamond = bd.Pos((x0 + x1) / 2, y, z) * bd.Rot(45, 0, 0) * bd.Box(x1 - x0, 2 * r, 2 * r)
-    if up:
-        s += diamond & box(x0 - 1, x1 + 1, y - 2 * r, y + 2 * r, z + r / S2, z + 2 * r)
-    if down:
-        s += diamond & box(x0 - 1, x1 + 1, y - 2 * r, y + 2 * r, z - 2 * r, z - r / S2)
-    return s
+def x_diamond(r, x0, x1, y, z):
+    """Square prism along X, turned 45 deg: corners r*sqrt2 above, below and to each side of (y, z)."""
+    return bd.Pos((x0 + x1) / 2, y, z) * bd.Rot(45, 0, 0) * bd.Box(x1 - x0, 2 * r, 2 * r)
 
 
-def slot(c, size, axis):
-    """A zip-tie slot: box centred on c, size (along slot, across, depth through)."""
-    return bd.Pos(*c) * bd.Rot(*axis) * bd.Box(*size)
+def plate(plane, outline, windows, t):
+    """A flat plate: outline and windows as (u, v) points on `plane`, windows with rounded corners, t thick."""
+    s = bd.Polygon(*outline, align=None)
+    for w in windows:
+        wp = bd.Polygon(*w, align=None)
+        s = s - bd.fillet(wp.vertices(), FILLET)
+    return bd.extrude(plane * s, amount=t / 2, both=True)
 
 
-# ---------------------------------------------------------------- frame
-def pod_space(x):
-    """What a vertical pod and its wires need clear: the pod above the lip, the wire hole through the lip,
-    the skirt under the funnel."""
-    return (z_cyl(R_IN, PB, 120, x) + z_cyl(LIP_R, Z_BOT - 1, PB + 1, x)
-            + z_cyl(R_IN, Z_BOT - 1, PB - LIP_T - CONE_H, x))
+def xz_plane(y):           # u = world X, v = world Z
+    return bd.Plane(origin=(0, y, 0), x_dir=(1, 0, 0), z_dir=(0, -1, 0))
 
 
-def vertical_band(sx):
-    """Tube round the vertical pod from the plate up to z 34, with pointed (45 degree) windows: no overhangs.
-    The pod stands on a lip 14 mm up; under it a skirt with a notch lets its wires turn and leave sideways."""
-    x = sx * VX
-    b = z_cyl(R_OUT, Z_BOT, 20.0 + BAND_W, x)
-    lip_ring = z_cyl(R_IN + 0.5, PB - LIP_T, PB, x)
-    funnel = z_cyl(R_IN + 0.5, PB - LIP_T - CONE_H, PB - LIP_T, x) - (
-        bd.Pos(x, 0, PB - LIP_T - CONE_H) * bd.Cone(R_IN, LIP_R, CONE_H, align=(bd.Align.CENTER, bd.Align.CENTER, bd.Align.MIN)))
-    b = b - z_cyl(R_IN, Z_BOT - 1, 60, x) + lip_ring + funnel
-    b -= pod_space(x)
-    # wire notch in the skirt, facing the splice tray (off-centre, clear of the tether column)
-    a = math.radians(180.0 - 25.0 if sx > 0 else 25.0)
-    b -= bd.Pos(x + R_IN * math.cos(a), R_IN * math.sin(a), Z_BOT + 3.5) * bd.Rot(0, 0, math.degrees(a)) * bd.Box(10, 12, 9)
-    z0, z1, w = PB + 12.4, 20.0 - 2.0, 20.0
-    win = bd.Polygon((-w / 2, z0), (w / 2, z0), (w / 2, z1 - w / 2), (0, z1), (-w / 2, z1 - w / 2), align=None)
-    for k in range(8):
-        a = math.radians(22.5 + 45.0 * k)
-        pl = bd.Plane(origin=(x + R_IN * math.cos(a), R_IN * math.sin(a), 0),
-                      x_dir=(-math.sin(a), math.cos(a), 0), z_dir=(math.cos(a), math.sin(a), 0))
-        b -= bd.extrude(pl * win, amount=6, both=True)
-    # zip-tie slots in the top band, either side of the cage bar at 45 degrees (outboard-left)
-    for da in (-13.0, 13.0):
-        a = math.radians((45.0 if sx > 0 else 135.0) + da)
-        c = (x + R_IN * math.cos(a) + 1.2 * math.cos(a), R_IN * math.sin(a) + 1.2 * math.sin(a), 25.5)
-        b -= bd.Pos(*c) * bd.Rot(0, 0, math.degrees(a)) * bd.Box(8, 5.0, 2.4)
-    return b
+def yz_plane(x):           # u = world Y, v = world Z
+    return bd.Plane(origin=(x, 0, 0), x_dir=(0, 1, 0), z_dir=(1, 0, 0))
 
 
-def side_band(sy, x0, x1, lip=False):
-    y = sy * SY
-    outer = tear_x(R_OUT, x0, x1, y, SZ, up=True, down=True)
-    b = outer & box(x0 - 1, x1 + 1, y - 60, y + 60, Z_BOT, 200)
-    b += box(x0, x1, y - 4.0, y + 4.0, Z_BOT, SZ - R_OUT * S2 + 4.0)          # foot: the point starts on the plate
-    b -= tear_x(R_IN, x0 - 1, x1 + 1, y, SZ, up=True)
-    if lip:
-        l = (tear_x(R_OUT, x0 - LIP_T, x0, y, SZ, up=True, down=True) & box(x0 - 3, x0 + 1, y - 60, y + 60, Z_BOT, 200))
-        b += l - tear_x(LIP_R, x0 - LIP_T - 1, x0 + 1, y, SZ, up=True)
-    return b
+def mirror_u(windows):
+    return [[(-u, v) for u, v in w] for w in windows]
 
 
-def side_band_slots(sy):
-    """Two zip-tie slots in the front band, either side of the cage bar on the outboard-top diagonal."""
-    y = sy * SY
-    cut = None
-    for da in (-13.0, 13.0):
-        a = math.radians(45.0 + da)
-        cy, cz = y + sy * (R_IN + 1.2) * math.cos(a), SZ + (R_IN + 1.2) * math.sin(a)
-        s = bd.Pos(27.0, cy, cz) * bd.Rot(sy * math.degrees(a), 0, 0) * bd.Box(2.4, 8, 5.0)
-        cut = s if cut is None else cut + s
-    return cut
+# truss windows for one half of a full-height plate (u = distance from its inner end), all overhangs >= 45 deg
+def truss_windows(u0):
+    def sh(pts):
+        return [(u0 + u, v) for u, v in pts]
+    return [sh([(15, 0), (0 + 30, -23), (45, 0), (30, 23)]),           # centre diamond
+            sh([(3, 29), (15, 29), (3, 11)]), sh([(45, 29), (33, 29), (45, 11)]),
+            sh([(3, -29), (15, -29), (3, -11)]), sh([(45, -29), (33, -29), (45, -11)])]
 
 
-def noodle_saddle(sy, x0, x1):
-    y = sy * SY
-    ro = SADDLE_R + BAND_T
-    s = tear_x(ro, x0, x1, y, NZ, up=False, down=True) & box(x0 - 1, x1 + 1, y - 60, y + 60, Z_BOT, NZ)
-    s -= x_cyl(SADDLE_R, x0 - 1, x1 + 1, y, NZ)
-    # zip-tie slots through both walls, just below the noodle's equator
-    for side in (1, -1):
-        s -= box((x0 + x1) / 2 - 2.5, (x0 + x1) / 2 + 2.5, y + side * (SADDLE_R - 1), y + side * (ro + 1), NZ - 9, NZ - 6.6)
-    return s
-
-
+# ---------------------------------------------------------------- frame parts
 def rail(sy):
-    y0, y1 = sorted((sy * RAIL_Y0, sy * (RAIL_Y0 + RAIL_T)))
-    r = box(-RAIL_X, RAIL_X, y0, y1, Z_BOT, RAIL_TOP)
-    # lightening windows where nothing is attached (8 mm frame left round them), 45 degree tops
-    for xa, xb in ((-99.0, -78.0), (-38.0, 16.0), (37.0, 51.0), (78.0, 99.0)):
-        w = xb - xa
-        prof = bd.Polygon((xa, Z_BOT + 8), (xb, Z_BOT + 8), (xb, RAIL_TOP - 8 - w / 2), ((xa + xb) / 2, RAIL_TOP - 8),
-                          (xa, RAIL_TOP - 8 - w / 2), align=None)
-        r -= bd.extrude(bd.Plane.XZ * prof, amount=60, both=True)
-    for sx in (1, -1):        # between each vertical pod's two bands
-        xa, xb = sx * VX - 12, sx * VX + 12
-        prof = bd.Polygon((xa, Z_BOT + BAND_W + 6), (xb, Z_BOT + BAND_W + 6), (xb, 20.0 - 6 - 12), (sx * VX, 20.0 - 6),
-                          (xa, 20.0 - 6 - 12), align=None)
-        r -= bd.extrude(bd.Plane.XZ * prof, amount=60, both=True)
-    # wire clip slots along the top edge (zip-tie round the cables)
-    for x in (-88.0, -60.0, -20.0, 0.0, 20.0, 60.0, 88.0):
-        r -= box(x - 2.5, x + 2.5, y0 - 1, y1 + 1, RAIL_TOP - 6, RAIL_TOP - 3.6)
+    """Side rail between the up/down rings: full height in the middle, tapering down onto the rings."""
+    outline = [(-VX, Z_BOT), (VX, Z_BOT), (VX, RING_TOP), (FULL_X, Z_TOP), (-FULL_X, Z_TOP), (-VX, RING_TOP)]
+    half = truss_windows(16.0) + [[(60, -29), (76, -29), (60, 10)]]
+    return plate(xz_plane(sy * (RAIL_Y - PLATE_T / 2)), outline, half + mirror_u(half), PLATE_T)
+
+
+def brace_end():
+    """Where a diamond brace from the cross bar (x=CB, y=BRACE_Y) touches the front up/down ring (tangent)."""
+    px, py = VX - CB, -BRACE_Y           # cross bar end, relative to the ring centre
+    d = math.hypot(px, py)
+    a = math.atan2(py, px) + math.acos(R_OUT / d)
+    return VX + R_OUT * math.cos(a), -(R_OUT * math.sin(a))     # (x, y) with y > 0
+
+
+def brace(sx, sy):
+    tx, ty = brace_end()
+    dx, dy = tx - CB, ty - BRACE_Y
+    L = math.hypot(dx, dy)
+    ux, uy = dx / L, dy / L
+    uf = (FULL_X - CB) / ux
+    outline = [(-2, Z_BOT), (L, Z_BOT), (L, RING_TOP), (uf, Z_TOP), (-2, Z_TOP)]
+    wins = truss_windows(5.0) + [[(uf - 1, -29), (uf + 16, -29), (uf - 1, 8)]]
+    pl = bd.Plane(origin=(CB, BRACE_Y, 0), x_dir=(ux, uy, 0), z_dir=(uy, -ux, 0))
+    b = plate(pl, outline, wins, PLATE_T)
+    if sy < 0:
+        b = b.mirror(bd.Plane.XZ)
+    if sx < 0:
+        b = b.mirror(bd.Plane.YZ)
+    return b
+
+
+def cross_bar():
+    """Box beam across the middle (like v13): two plates, top and bottom decks, a web out to the side rings."""
+    outline = [(-SY, Z_BOT), (SY, Z_BOT), (SY, Z_TOP), (-SY, Z_TOP)]
+    centre = [[(4, 0), (16, -22), (28, 0), (16, 22)]]
+    outer = [[(38, 5), (51, 5), (51, 18), (44.5, 24.5), (38, 18)],
+             [(38, -29), (51, -29), (51, -16), (44.5, -9.5), (38, -16)]]
+    wins = centre + outer
+    wins = wins + mirror_u(wins)
+    c = bd.Part()
+    for sx in (1, -1):
+        c += plate(yz_plane(sx * (CB - PLATE_T / 2)), outline, wins, PLATE_T)
+    c += box(-CB, CB, -SY, SY, Z_TOP - DECK_T, Z_TOP)                         # top deck (carries the saddles)
+    c += box(-CB, CB, -SY, SY, Z_BOT, Z_BOT + DECK_T)                         # bottom deck
+    for sy in (1, -1):
+        c += box(-CB + PLATE_T, CB - PLATE_T, sy * RAIL_Y, sy * SY, -1.2, 1.2)   # web to the side ring
+        c += z_cyl(10.0, Z_BOT, Z_TOP, 0, sy * 30.0)                          # cable tube (v13's round holes)
+    return c
+
+
+def side_ring(sy):
+    """Ring round a side pod's prop duct (axis X). Flat foot on the plate; the bore's top is pointed then
+    flattened (a 26 mm bridge), so it prints round enough without support. Top fin: 2 zip-tie holes."""
+    y = sy * SY
+    d = x_diamond(R_OUT, -CB, CB, y, SZ)
+    outer = (x_cyl(R_OUT, -CB, CB, y, SZ) + (d & box(-CB, CB, y - 60, y + 60, Z_BOT, SZ - R_OUT / S2))
+             + (d & box(-CB, CB, y - 60, y + 60, SZ + R_OUT / S2, Z_TOP)))      # flat top and foot, like v13's
+    fin = box(-CB, -2.0, y - 1.5, y + 1.5, Z_TOP - 4.0, Z_TOP + 7.0)
+    for x in (-10.0, -5.0):
+        fin -= box(x - 1.6, x + 1.6, y - 3, y + 3, Z_TOP + 2.2, Z_TOP + 4.0)
+    return outer + fin
+
+
+def side_bore(sy):
+    y = sy * SY
+    b = x_cyl(R_IN, -CB - 1, CB + 1, y, SZ)
+    b += x_diamond(R_IN, -CB - 1, CB + 1, y, SZ) & box(-CB - 1, CB + 1, y - 60, y + 60, SZ + R_IN / S2, Z_TOP - 2.0)
+    return b
+
+
+def vertical_ring(sx):
+    """Ring round an up/down pod's prop duct, standing on the plate. Two lugs with zip-tie slots
+    on the outer diagonals line up with the pod's cage bars."""
+    x = sx * VX
+    r = z_cyl(R_OUT, Z_BOT, RING_TOP, x)
+    for a in ((45, -45) if sx > 0 else (135, 225)):
+        lug = box(R_OUT - 2, R_OUT + 10, -5, 5, Z_BOT, Z_BOT + 3)
+        for rr in (R_OUT + 3.0, R_OUT + 7.0):
+            lug -= box(rr - 0.9, rr + 0.9, -1.6, 1.6, Z_BOT - 1, Z_BOT + 4)
+        r += bd.Pos(x, 0, 0) * bd.Rot(0, 0, a) * lug
     return r
 
 
 def splice_tray():
-    xe = VX - R_OUT + 18.0                            # floor runs under the bands' edges
-    t = box(-xe, xe, -RAIL_Y0 - 0.5, RAIL_Y0 + 0.5, Z_BOT, Z_BOT + 2.4)
-    for sx in (1, -1):                                # end walls between the vertical bands
-        t += box(sx * 16.0 - 1.2, sx * 16.0 + 1.2, -RAIL_Y0 - 0.5, RAIL_Y0 + 0.5, Z_BOT, Z_BOT + TRAY_H)
-    for sx in (1, -1):                                # keep the pod bores clear
-        t -= pod_space(sx * VX)
-    for x in (-10.0, 10.0):                           # zip-tie slots: tie the splice bundle down
-        for yy in (-28.0, 28.0):
-            t -= box(x - 2.5, x + 2.5, yy - 1.2, yy + 1.2, Z_BOT - 1, Z_BOT + 4)
-    for yy in (-15.0, 0.0, 15.0):                     # drain holes
-        t -= z_cyl(3.0, Z_BOT - 1, Z_BOT + 4, 0.0, yy)
-    return t
-
-
-def tether_tower():
-    """'+' column from the tray to a clamp above the rear pod's duct. The tether pulls near the floats' height,
-    so it hardly pitches the robot."""
-    zc = TOWER_TOP - 12.0
-    # the X plate runs into both vertical pod bands, so a tether yank goes straight into the stiff rings
-    t = box(-(VX - R_IN - 0.5), VX - R_IN - 0.5, -2.0, 2.0, Z_BOT, zc) + box(-1.2, 1.2, -8.0, 8.0, Z_BOT, zc)
-    # clamp block, widening upward at 45 degrees (no overhang)
-    prof = bd.Polygon((-4, zc - 14), (4, zc - 14), (20, zc + 2), (20, TOWER_TOP), (-20, TOWER_TOP), (-20, zc + 2), align=None)
-    blk = bd.extrude(bd.Plane.XZ * prof, amount=19, both=True)
-    prof_y = bd.Polygon((-8, zc - 14), (8, zc - 14), (19, zc - 3), (19, TOWER_TOP), (-19, TOWER_TOP), (-19, zc - 3), align=None)
-    t += blk & bd.extrude(bd.Plane.YZ * prof_y, amount=21, both=True)
-    # cable grooves along X in the top: tether and camera cable (half-round, open on top)
-    yt, yc = -5.0, 12.0
-    t -= x_cyl(TETHER_D / 2 + 0.5, -30, 30, yt, TOWER_TOP)
-    t -= x_cyl(CAMCABLE_D / 2 + 0.5, -30, 30, yc, TOWER_TOP)
-    # zip-tie slots under the grooves, across Y, two along the clamp (strain relief)
-    for x in (-12.0, 12.0):
-        t -= box(x - 2.5, x + 2.5, -25, 25, TOWER_TOP - TETHER_D / 2 - 6.4, TOWER_TOP - TETHER_D / 2 - 4.0)
+    """Bottom deck between the rails: the 8 motor-to-tether splices lie here, zip-tied, with drain holes."""
+    xe = VX - R_IN
+    t = box(-xe, xe, -(RAIL_Y - 1), RAIL_Y - 1, Z_BOT, Z_BOT + DECK_T)
+    for x in (-50.0, -28.0, 28.0, 50.0):
+        for yy in (-14.0, 14.0):
+            t -= box(x - 1.2, x + 1.2, yy - 2.5, yy + 2.5, Z_BOT - 1, Z_BOT + 4)     # zip-tie slots
+    for x in (-40.0, 40.0):
+        for yy in (-20.0, 0.0, 20.0):
+            t -= z_cyl(3.0, Z_BOT - 1, Z_BOT + 4, x, yy)                              # drain holes
     return t
 
 
 def camera_shelf():
-    x0, x1 = CAM_SHELF
-    s = box(x0, x1, -CAM_W / 2, CAM_W / 2, CAM_Z - 3.0, CAM_Z)
-    xs = VX + 34.0                                     # fork plates start inside the front band
-    for sy in (1, -1):
-        s += box(xs, x1, sy * CAM_W / 2 - 3.0 * (sy > 0), sy * CAM_W / 2 + 3.0 * (sy < 0), Z_BOT, CAM_Z)
-    s += box(x1 - 3.0, x1, -CAM_W / 2, CAM_W / 2, Z_BOT, CAM_Z)        # front bumper under the camera
-    s += box(VX + R_IN + 0.5, x1, -1.2, 1.2, Z_BOT, CAM_Z)               # centre rib: shorter bridges under the shelf
-    # windows in the fork plates and bumper, 45 degree tops
-    s -= box(x1 - 4, x1 + 1, -CAM_W / 2 + 5, CAM_W / 2 - 5, Z_BOT + 6, CAM_Z - 9 - (CAM_W / 2 - 5))
-    s -= bd.Pos(x1 - 1.5, 0, CAM_Z - 9 - (CAM_W / 2 - 5)) * bd.Rot(45, 0, 0) * bd.Box(5, (CAM_W - 10) / S2, (CAM_W - 10) / S2)
-    for xa, xb in ((xs + 10, x1 - 8),):  # windows through the fork plates and the rib
-        w = xb - xa
-        prof = bd.Polygon((xa, Z_BOT + 6), (xb, Z_BOT + 6), (xb, CAM_Z - 9 - w / 2), ((xa + xb) / 2, CAM_Z - 9),
-                          (xa, CAM_Z - 9 - w / 2), align=None)
-        s -= bd.extrude(bd.Plane.XZ * prof, amount=40, both=True)
-    s -= pod_space(VX)
-    for x in (x0 + 8, x1 - 10):                                         # zip-tie slots for the camera
+    """Top deck plate at the front for the camera: 3 ribs under it keep the bridges short."""
+    x0, x1 = CAM_X
+    s = box(x0, x1, -(RAIL_Y - 1), RAIL_Y - 1, Z_TOP - DECK_T, Z_TOP)
+    rib_win = [[(x0 + 4, 0), (x0 + 15, -24), (x1 - 4, 0), (x0 + 15, 24)]]
+    for yy in (-16.0, 0.0, 16.0):
+        s += plate(xz_plane(yy), [(x0, Z_BOT), (x1, Z_BOT), (x1, Z_TOP - DECK_T), (x0, Z_TOP - DECK_T)], rib_win, 2.4)
+    for x in (x0 + 4.0, x1 - 4.0):
         for yy in (-12.0, 12.0):
-            s -= box(x - 1.2, x + 1.2, yy - 2.5, yy + 2.5, CAM_Z - 4, CAM_Z + 1)
+            s -= box(x - 1.2, x + 1.2, yy - 2.5, yy + 2.5, Z_TOP - 4, Z_TOP + 1)
+    return s
+
+
+def tether_post():
+    """Rear post: the tether (up to 14 mm) and the camera cable (up to 7 mm) lie in grooves along X at the top
+    and are zip-tied down; a pull goes into the frame, not into the splices."""
+    zc = TOWER_TOP - 12.0
+    t = box(POST_X - 20, -CB, -2.0, 2.0, Z_BOT, zc) + box(POST_X - 1.2, POST_X + 1.2, -8.0, 8.0, Z_BOT, zc)
+    xz = bd.extrude(bd.Plane.XZ * bd.Polygon((POST_X - 4, 46), (POST_X + 4, 46), (POST_X + 20, 62), (POST_X + 20, 72),
+                                             (POST_X - 20, 72), (POST_X - 20, 62), align=None), amount=19, both=True)
+    yz = bd.extrude(bd.Plane.YZ * bd.Polygon((-8, 46), (8, 46), (19, 57), (19, 72), (-19, 72), (-19, 57), align=None),
+                    amount=200, both=True)
+    t += xz & yz
+    t -= x_cyl(7.5, POST_X - 30, POST_X + 30, -5.0, TOWER_TOP)                 # tether
+    t -= x_cyl(4.0, POST_X - 30, POST_X + 30, 12.0, TOWER_TOP)                 # camera cable
+    for dx in (-12.0, 12.0):
+        t -= box(POST_X + dx - 2.5, POST_X + dx + 2.5, -25, 25, 58.6, 61.0)   # zip-tie slots under the grooves
+    return t
+
+
+def saddle(sy):
+    """Noodle cradle on the cross bar: pointed (45 deg) underside, 2 zip-tie holes in each arm."""
+    y = sy * NY
+    ro = SADDLE_R + 2.4
+    s = (x_cyl(ro, -CB, CB, y, NZ) + (x_diamond(ro, -CB, CB, y, NZ) & box(-CB, CB, y - 60, y + 60, Z_TOP - 9, NZ - ro / S2))) \
+        & box(-CB, CB, y - 60, y + 60, Z_TOP - 0.5, NZ)
+    s -= x_cyl(SADDLE_R, -CB - 1, CB + 1, y, NZ)
+    for side in (1, -1):
+        for x in (-7.0, 7.0):
+            s -= box(x - 1.6, x + 1.6, y + side * (SADDLE_R - 2), y + side * (SADDLE_R + 6), NZ - 7.0, NZ - 5.2)
     return s
 
 
 @model
 def frame():
-    f = rail(1) + rail(-1)
-    for sx in (1, -1):
-        f += vertical_band(sx)
-    for sy in (1, -1):
-        f += side_band(sy, 20.0, 20.0 + BAND_W)
-        f += side_band(sy, -POD_L / 2, -POD_L / 2 + BAND_W, lip=True)
-        f += noodle_saddle(sy, 20.0, 20.0 + BAND_W)
-        f += noodle_saddle(sy, -POD_L / 2, -POD_L / 2 + BAND_W)
-    f += splice_tray() + tether_tower() + camera_shelf()
-    for sy in (1, -1):
-        f -= side_band_slots(sy)
-        f -= tear_x(R_IN, -POD_L / 2, 70.0, sy * SY, SZ, up=True)            # side pod bores clear
-        f -= x_cyl(SADDLE_R, -POD_L / 2 - 5, 40.0, sy * SY, NZ)               # noodle seat through the band tops
-    for sx in (1, -1):
-        f -= pod_space(sx * VX)                                             # vertical pods and their wires clear
-    assert len(f.solids()) == 1, f"frame is {len(f.solids())} pieces"
+    f = cross_bar()
+    for s in (1, -1):
+        f += rail(s) + vertical_ring(s) + side_ring(s) + saddle(s)
+        for t in (1, -1):
+            f += brace(s, t)
+    f += splice_tray() + camera_shelf() + tether_post()
+    # keep the pods, their water flow and the noodles clear
+    for s in (1, -1):
+        f -= z_cyl(R_IN, Z_BOT - 1, TOWER_TOP + 40, s * VX)                     # up/down duct bores, open above
+        f -= side_bore(s)
+        f -= x_cyl(POD_OD / 2 + 1.0, -130, -CB, s * SY, SZ)                     # side pod body behind its ring
+        f -= x_cyl(R_IN, CB, CB + 60, s * SY, SZ)                               # side pod intake in front
+        f -= x_cyl(SADDLE_R, -90, 90, s * NY, NZ)                               # noodle
+        f -= z_cyl(7.5, Z_BOT - 1, Z_TOP + 1, 0, s * 30.0)                      # cable tube holes
+    sol = f.solids()
+    if len(sol) > 1:
+        sol = sorted(sol, key=lambda s: s.volume, reverse=True)
+        assert sum(s.volume for s in sol[1:]) < 1.0, f"frame is {len(sol)} pieces: {[round(s.volume) for s in sol]}"
+        f = sol[0]
     f.label = "frame"
     f.color = ORANGE
     return f
-
 
 
 # ---------------------------------------------------------------- thruster pods and floats (not printed here)
 @model
 def thruster_pod():
     """Stand-in for 'motor caseing v1' + the modified pump. Local axis +X; prop duct at x=-25..0, sleeve 60..90."""
-    duct = x_cyl(DUCT_OD / 2, -25, 0) - x_cyl(DUCT_OD / 2 - 2.5, -26, 1)
+    duct = x_cyl(DUCT_OD / 2, -DUCT_L, 0) - x_cyl(DUCT_OD / 2 - 2.5, -26, 1)
     sleeve = x_cyl(POD_OD / 2, 60, 90) - x_cyl(SLEEVE_ID / 2, 59, 91)
     rings = x_cyl(POD_OD / 2, 0, 6) - x_cyl(POD_OD / 2 - 3, -1, 7)
     casing = duct + sleeve + rings
@@ -255,20 +274,21 @@ def noodle_piece(length=NOODLE_L):
 
 
 def pod_locations():
-    """name -> Location. Vertical pods: duct up. Side pods: duct (prop) forward."""
+    """name -> Location. Up/down pods: prop duct up in the ring on the plate, pod body below.
+    Side pods: prop duct forward in the side ring, pod body behind."""
     return {
-        "pod_front": bd.Pos(VX, 0, 32.5) * bd.Rot(0, 90, 0),
-        "pod_rear": bd.Pos(-VX, 0, 32.5) * bd.Rot(0, 90, 0),
-        "pod_left": bd.Pos(32.5, SY, SZ) * bd.Rot(0, 0, 180),
-        "pod_right": bd.Pos(32.5, -SY, SZ) * bd.Rot(0, 0, 180),
+        "pod_front": bd.Pos(VX, 0, Z_BOT) * bd.Rot(0, 90, 0),
+        "pod_rear": bd.Pos(-VX, 0, Z_BOT) * bd.Rot(0, 90, 0),
+        "pod_left": bd.Pos(-CB, SY, SZ) * bd.Rot(0, 0, 180),
+        "pod_right": bd.Pos(-CB, -SY, SZ) * bd.Rot(0, 0, 180),
     }
 
 
-NOODLE_X = -4.2     # noodle centre from analysis/sim.py: 4 mm behind the frame centre
+NOODLE_X = 0.0      # noodle centre: set from analysis/sim.py
 
 
 @model
-def rov_v15():
+def rov_v16():
     parts = [frame().shape]
     pod = thruster_pod().shape
     for name, loc in pod_locations().items():
@@ -276,12 +296,12 @@ def rov_v15():
         p.label = name
         parts.append(p)
     for sy, nm in ((1, "noodle_left"), (-1, "noodle_right")):
-        n = bd.Pos(NOODLE_X, sy * SY, NZ) * noodle_piece()
+        n = bd.Pos(NOODLE_X, sy * NY, NZ) * noodle_piece()
         n.label = nm; n.color = YELLOW
         parts.append(n)
-    return bd.Compound(children=parts, label="rov_v15")
+    return bd.Compound(children=parts, label="rov_v16")
 
 
 if __name__ == "__main__":
     frame()
-    rov_v15()
+    rov_v16()
