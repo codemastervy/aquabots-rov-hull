@@ -1,0 +1,4016 @@
+{
+"commands": [
+{
+"command": "parameters.add",
+"params": {
+"name": "R_IN",
+"expression": "32.3 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "RING_T",
+"expression": "2.4 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "R_OUT",
+"expression": "R_IN + RING_T"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "RING_L",
+"expression": "25.0 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "VX",
+"expression": "100.0 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "CB",
+"expression": "13.0 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "XR",
+"expression": "52.0 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "PLATE_T",
+"expression": "3.0 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "DECK_T",
+"expression": "2.4 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "SPINE_T",
+"expression": "2.4 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "NOODLE_D",
+"expression": "65.0 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "NY",
+"expression": "35.0 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "NZ",
+"expression": "15.0 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "BOX_TOP",
+"expression": "NZ + NOODLE_D/2 + 0.6 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "XS",
+"expression": "68.0 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "WALL_IN",
+"expression": "NY + NOODLE_D/2 + 0.5 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "WALL_Y",
+"expression": "WALL_IN + PLATE_T/2"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "LIP",
+"expression": "6.0 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "POD_OD",
+"expression": "75.0 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "SY",
+"expression": "WALL_IN + PLATE_T + POD_OD/2 + 2.5 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "POST_X",
+"expression": "-35.0 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "TOWER_TOP",
+"expression": "BOX_TOP + 36 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "CAM_X0",
+"expression": "36.0 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "CAM_X1",
+"expression": "66.0 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "CAM_Z",
+"expression": "BOX_TOP + 16 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "CAM_W",
+"expression": "40.0 mm"
+}
+},
+{
+"command": "parameters.add",
+"params": {
+"name": "RACK_TOP",
+"expression": "BOX_TOP + 10 mm"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": "XY",
+"name": "DeckSk",
+"offset": "(-R_OUT)"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+121.2742,
+26.1362
+],
+[
+"XS",
+"WALL_Y"
+],
+[
+"-XS",
+"WALL_Y"
+],
+[
+-121.2742,
+26.1362
+],
+[
+-121.2742,
+-26.1362
+],
+[
+"-XS",
+"-WALL_Y"
+],
+[
+"XS",
+"-WALL_Y"
+],
+[
+121.2742,
+-26.1362
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+25.0,
+12.0
+],
+[
+47.0,
+12.0
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+47.0,
+12.0
+],
+"end": [
+53.0,
+18.0
+],
+"through": [
+51.242640687119284,
+13.757359312880716
+]
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+53.0,
+18.0
+],
+[
+53.0,
+50.0
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+53.0,
+50.0
+],
+"end": [
+47.0,
+56.0
+],
+"through": [
+51.242640687119284,
+54.242640687119284
+]
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+47.0,
+56.0
+],
+[
+25.0,
+56.0
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+25.0,
+56.0
+],
+"end": [
+19.0,
+50.0
+],
+"through": [
+20.757359312880716,
+54.242640687119284
+]
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+19.0,
+50.0
+],
+[
+19.0,
+18.0
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+19.0,
+18.0
+],
+"end": [
+25.0,
+12.0
+],
+"through": [
+20.757359312880716,
+13.757359312880716
+]
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+25.0,
+-56.0
+],
+[
+47.0,
+-56.0
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+47.0,
+-56.0
+],
+"end": [
+53.0,
+-50.0
+],
+"through": [
+51.242640687119284,
+-54.242640687119284
+]
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+53.0,
+-50.0
+],
+[
+53.0,
+-18.0
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+53.0,
+-18.0
+],
+"end": [
+47.0,
+-12.0
+],
+"through": [
+51.242640687119284,
+-13.757359312880716
+]
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+47.0,
+-12.0
+],
+[
+25.0,
+-12.0
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+25.0,
+-12.0
+],
+"end": [
+19.0,
+-18.0
+],
+"through": [
+20.757359312880716,
+-13.757359312880716
+]
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+19.0,
+-18.0
+],
+[
+19.0,
+-50.0
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+19.0,
+-50.0
+],
+"end": [
+25.0,
+-56.0
+],
+"through": [
+20.757359312880716,
+-54.242640687119284
+]
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-47.0,
+12.0
+],
+[
+-25.0,
+12.0
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+-25.0,
+12.0
+],
+"end": [
+-19.0,
+18.0
+],
+"through": [
+-20.757359312880716,
+13.757359312880716
+]
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-19.0,
+18.0
+],
+[
+-19.0,
+50.0
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+-19.0,
+50.0
+],
+"end": [
+-25.0,
+56.0
+],
+"through": [
+-20.757359312880716,
+54.242640687119284
+]
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-25.0,
+56.0
+],
+[
+-47.0,
+56.0
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+-47.0,
+56.0
+],
+"end": [
+-53.0,
+50.0
+],
+"through": [
+-51.242640687119284,
+54.242640687119284
+]
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-53.0,
+50.0
+],
+[
+-53.0,
+18.0
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+-53.0,
+18.0
+],
+"end": [
+-47.0,
+12.0
+],
+"through": [
+-51.242640687119284,
+13.757359312880716
+]
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-47.0,
+-56.0
+],
+[
+-25.0,
+-56.0
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+-25.0,
+-56.0
+],
+"end": [
+-19.0,
+-50.0
+],
+"through": [
+-20.757359312880716,
+-54.242640687119284
+]
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-19.0,
+-50.0
+],
+[
+-19.0,
+-18.0
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+-19.0,
+-18.0
+],
+"end": [
+-25.0,
+-12.0
+],
+"through": [
+-20.757359312880716,
+-13.757359312880716
+]
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-25.0,
+-12.0
+],
+[
+-47.0,
+-12.0
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+-47.0,
+-12.0
+],
+"end": [
+-53.0,
+-18.0
+],
+"through": [
+-51.242640687119284,
+-13.757359312880716
+]
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-53.0,
+-18.0
+],
+[
+-53.0,
+-50.0
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+-53.0,
+-50.0
+],
+"end": [
+-47.0,
+-56.0
+],
+"through": [
+-51.242640687119284,
+-54.242640687119284
+]
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "BottomDeck",
+"distance": "DECK_T",
+"operation": "new",
+"body_name": "Frame"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": "XZ",
+"name": "SideWallLSk",
+"offset": "1*WALL_Y"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"-XS - 1",
+"-((-R_OUT))"
+],
+[
+"XS + 1",
+"-((-R_OUT))"
+],
+[
+"XS + 1",
+"-(BOX_TOP)"
+],
+[
+"-XS - 1",
+"-(BOX_TOP)"
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+28.0,
+0
+],
+[
+43.0,
+23
+],
+[
+58.0,
+0
+],
+[
+43.0,
+-23
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+16.0,
+-29
+],
+[
+28.0,
+-29
+],
+[
+16.0,
+-11
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+58.0,
+-29
+],
+[
+46.0,
+-29
+],
+[
+58.0,
+-11
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+16.0,
+29
+],
+[
+28.0,
+29
+],
+[
+16.0,
+11
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+58.0,
+29
+],
+[
+46.0,
+29
+],
+[
+58.0,
+11
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-43.0,
+-23
+],
+[
+-58.0,
+0
+],
+[
+-43.0,
+23
+],
+[
+-28.0,
+0
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-16.0,
+-11
+],
+[
+-28.0,
+-29
+],
+[
+-16.0,
+-29
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-58.0,
+-11
+],
+[
+-46.0,
+-29
+],
+[
+-58.0,
+-29
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-16.0,
+11
+],
+[
+-28.0,
+29
+],
+[
+-16.0,
+29
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-58.0,
+11
+],
+[
+-46.0,
+29
+],
+[
+-58.0,
+29
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "SideWallL",
+"distance": "PLATE_T",
+"direction": "symmetric",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": "XZ",
+"name": "SideWallRSk",
+"offset": "-1*WALL_Y"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"-XS - 1",
+"-((-R_OUT))"
+],
+[
+"XS + 1",
+"-((-R_OUT))"
+],
+[
+"XS + 1",
+"-(BOX_TOP)"
+],
+[
+"-XS - 1",
+"-(BOX_TOP)"
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+28.0,
+0
+],
+[
+43.0,
+23
+],
+[
+58.0,
+0
+],
+[
+43.0,
+-23
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+16.0,
+-29
+],
+[
+28.0,
+-29
+],
+[
+16.0,
+-11
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+58.0,
+-29
+],
+[
+46.0,
+-29
+],
+[
+58.0,
+-11
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+16.0,
+29
+],
+[
+28.0,
+29
+],
+[
+16.0,
+11
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+58.0,
+29
+],
+[
+46.0,
+29
+],
+[
+58.0,
+11
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-43.0,
+-23
+],
+[
+-58.0,
+0
+],
+[
+-43.0,
+23
+],
+[
+-28.0,
+0
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-16.0,
+-11
+],
+[
+-28.0,
+-29
+],
+[
+-16.0,
+-29
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-58.0,
+-11
+],
+[
+-46.0,
+-29
+],
+[
+-58.0,
+-29
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-16.0,
+11
+],
+[
+-28.0,
+29
+],
+[
+-16.0,
+29
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-58.0,
+11
+],
+[
+-46.0,
+29
+],
+[
+-58.0,
+29
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "SideWallR",
+"distance": "PLATE_T",
+"direction": "symmetric",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": {
+"origin": [
+68.0,
+69.5,
+0.0
+],
+"x_dir": [
+0.7756,
+-0.6313,
+0.0
+],
+"y_dir": [
+0,
+0,
+1
+]
+},
+"name": "AngleSk+1+1"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-2.0,
+-34.7
+],
+[
+68.6918,
+-34.7
+],
+[
+68.6918,
+-9.7
+],
+[
+24.0421,
+48.1
+],
+[
+-2.0,
+48.1
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+5.0,
+-29.0
+],
+[
+21.0421,
+-29.0
+],
+[
+5.0,
+18.0
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+28.0421,
+-29.0
+],
+[
+58.6918,
+-29.0
+],
+[
+28.0421,
+14.0
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "AngleWall+1+1",
+"distance": "PLATE_T",
+"direction": "symmetric",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": {
+"origin": [
+68.0,
+-69.5,
+0.0
+],
+"x_dir": [
+0.7756,
+0.6313,
+0.0
+],
+"y_dir": [
+0,
+0,
+1
+]
+},
+"name": "AngleSk+1-1"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-2.0,
+-34.7
+],
+[
+68.6918,
+-34.7
+],
+[
+68.6918,
+-9.7
+],
+[
+24.0421,
+48.1
+],
+[
+-2.0,
+48.1
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+5.0,
+-29.0
+],
+[
+21.0421,
+-29.0
+],
+[
+5.0,
+18.0
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+28.0421,
+-29.0
+],
+[
+58.6918,
+-29.0
+],
+[
+28.0421,
+14.0
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "AngleWall+1-1",
+"distance": "PLATE_T",
+"direction": "symmetric",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": {
+"origin": [
+-68.0,
+69.5,
+0.0
+],
+"x_dir": [
+-0.7756,
+-0.6313,
+0.0
+],
+"y_dir": [
+0,
+0,
+1
+]
+},
+"name": "AngleSk-1+1"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-2.0,
+-34.7
+],
+[
+68.6918,
+-34.7
+],
+[
+68.6918,
+-9.7
+],
+[
+24.0421,
+48.1
+],
+[
+-2.0,
+48.1
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+5.0,
+-29.0
+],
+[
+21.0421,
+-29.0
+],
+[
+5.0,
+18.0
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+28.0421,
+-29.0
+],
+[
+58.6918,
+-29.0
+],
+[
+28.0421,
+14.0
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "AngleWall-1+1",
+"distance": "PLATE_T",
+"direction": "symmetric",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": {
+"origin": [
+-68.0,
+-69.5,
+0.0
+],
+"x_dir": [
+-0.7756,
+0.6313,
+0.0
+],
+"y_dir": [
+0,
+0,
+1
+]
+},
+"name": "AngleSk-1-1"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-2.0,
+-34.7
+],
+[
+68.6918,
+-34.7
+],
+[
+68.6918,
+-9.7
+],
+[
+24.0421,
+48.1
+],
+[
+-2.0,
+48.1
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+5.0,
+-29.0
+],
+[
+21.0421,
+-29.0
+],
+[
+5.0,
+18.0
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+28.0421,
+-29.0
+],
+[
+58.6918,
+-29.0
+],
+[
+28.0421,
+14.0
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "AngleWall-1-1",
+"distance": "PLATE_T",
+"direction": "symmetric",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": "XZ",
+"name": "SpineSk",
+"offset": "0"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"-XS - 1",
+"-((-R_OUT))"
+],
+[
+"XS + 1",
+"-((-R_OUT))"
+],
+[
+"XS + 1",
+"-(BOX_TOP)"
+],
+[
+"CAM_X1",
+"-(BOX_TOP)"
+],
+[
+"CAM_X1",
+"-(CAM_Z)"
+],
+[
+"CAM_X0",
+"-(CAM_Z)"
+],
+[
+"CAM_X0 - 10",
+"-(RACK_TOP)"
+],
+[
+"POST_X + 20",
+"-(RACK_TOP)"
+],
+[
+"POST_X + 20",
+"-(TOWER_TOP - 12)"
+],
+[
+"POST_X - 20",
+"-(TOWER_TOP - 12)"
+],
+[
+"POST_X - 20",
+"-(BOX_TOP)"
+],
+[
+"-XS - 1",
+"-(BOX_TOP)"
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-52.0,
+0
+],
+[
+-40.0,
+24
+],
+[
+-28.0,
+0
+],
+[
+-40.0,
+-24
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-12.0,
+0
+],
+[
+0.0,
+24
+],
+[
+12.0,
+0
+],
+[
+0.0,
+-24
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+28.0,
+0
+],
+[
+40.0,
+24
+],
+[
+52.0,
+0
+],
+[
+40.0,
+-24
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-10.5,
+"-(BOX_TOP + 4)"
+],
+[
+-5.5,
+"-(BOX_TOP + 4)"
+],
+[
+-5.5,
+"-(BOX_TOP + 7)"
+],
+[
+-10.5,
+"-(BOX_TOP + 7)"
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+5.5,
+"-(BOX_TOP + 4)"
+],
+[
+10.5,
+"-(BOX_TOP + 4)"
+],
+[
+10.5,
+"-(BOX_TOP + 7)"
+],
+[
+5.5,
+"-(BOX_TOP + 7)"
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "Spine",
+"distance": "SPINE_T",
+"direction": "symmetric",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": "YZ",
+"name": "LipSk",
+"offset": "0"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"1*WALL_IN",
+"BOX_TOP"
+],
+[
+"1*WALL_IN + -1*LIP",
+"BOX_TOP"
+],
+[
+"1*WALL_IN",
+"BOX_TOP - LIP"
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"1*SPINE_T/2",
+"BOX_TOP"
+],
+[
+"1*SPINE_T/2 + 1*LIP",
+"BOX_TOP"
+],
+[
+"1*SPINE_T/2",
+"BOX_TOP - LIP"
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"-1*WALL_IN",
+"BOX_TOP"
+],
+[
+"-1*WALL_IN + 1*LIP",
+"BOX_TOP"
+],
+[
+"-1*WALL_IN",
+"BOX_TOP - LIP"
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"-1*SPINE_T/2",
+"BOX_TOP"
+],
+[
+"-1*SPINE_T/2 + -1*LIP",
+"BOX_TOP"
+],
+[
+"-1*SPINE_T/2",
+"BOX_TOP - LIP"
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "Lips",
+"distance": "2*XS",
+"direction": "symmetric",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "solid.cylinder",
+"params": {
+"name": "VRingF",
+"radius": "R_OUT",
+"height": "RING_L",
+"base": [
+"1*VX",
+0,
+"(-R_OUT)"
+],
+"axis": "Z",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": "XY",
+"name": "LugsF",
+"offset": "(-R_OUT)"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"1*VX + 26.6579",
+19.5869
+],
+[
+"1*VX + 35.1432",
+28.0721
+],
+[
+"1*VX + 28.0721",
+35.1432
+],
+[
+"1*VX + 19.5869",
+26.6579
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"1*VX + 27.1529",
+24.8902
+],
+[
+"1*VX + 28.4257",
+26.163
+],
+[
+"1*VX + 26.163",
+28.4257
+],
+[
+"1*VX + 24.8902",
+27.1529
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"1*VX + 29.9813",
+27.7186
+],
+[
+"1*VX + 31.2541",
+28.9914
+],
+[
+"1*VX + 28.9914",
+31.2541
+],
+[
+"1*VX + 27.7186",
+29.9813
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"1*VX + 19.5869",
+-26.6579
+],
+[
+"1*VX + 28.0721",
+-35.1432
+],
+[
+"1*VX + 35.1432",
+-28.0721
+],
+[
+"1*VX + 26.6579",
+-19.5869
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"1*VX + 24.8902",
+-27.1529
+],
+[
+"1*VX + 26.163",
+-28.4257
+],
+[
+"1*VX + 28.4257",
+-26.163
+],
+[
+"1*VX + 27.1529",
+-24.8902
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"1*VX + 27.7186",
+-29.9813
+],
+[
+"1*VX + 28.9914",
+-31.2541
+],
+[
+"1*VX + 31.2541",
+-28.9914
+],
+[
+"1*VX + 29.9813",
+-27.7186
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "LugF",
+"distance": "3 mm",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "solid.cylinder",
+"params": {
+"name": "VRingB",
+"radius": "R_OUT",
+"height": "RING_L",
+"base": [
+"-1*VX",
+0,
+"(-R_OUT)"
+],
+"axis": "Z",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": "XY",
+"name": "LugsB",
+"offset": "(-R_OUT)"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"-1*VX + -19.5869",
+26.6579
+],
+[
+"-1*VX + -28.0721",
+35.1432
+],
+[
+"-1*VX + -35.1432",
+28.0721
+],
+[
+"-1*VX + -26.6579",
+19.5869
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"-1*VX + -24.8902",
+27.1529
+],
+[
+"-1*VX + -26.163",
+28.4257
+],
+[
+"-1*VX + -28.4257",
+26.163
+],
+[
+"-1*VX + -27.1529",
+24.8902
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"-1*VX + -27.7186",
+29.9813
+],
+[
+"-1*VX + -28.9914",
+31.2541
+],
+[
+"-1*VX + -31.2541",
+28.9914
+],
+[
+"-1*VX + -29.9813",
+27.7186
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"-1*VX + -26.6579",
+-19.5869
+],
+[
+"-1*VX + -35.1432",
+-28.0721
+],
+[
+"-1*VX + -28.0721",
+-35.1432
+],
+[
+"-1*VX + -19.5869",
+-26.6579
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"-1*VX + -27.1529",
+-24.8902
+],
+[
+"-1*VX + -28.4257",
+-26.163
+],
+[
+"-1*VX + -26.163",
+-28.4257
+],
+[
+"-1*VX + -24.8902",
+-27.1529
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"-1*VX + -29.9813",
+-27.7186
+],
+[
+"-1*VX + -31.2541",
+-28.9914
+],
+[
+"-1*VX + -28.9914",
+-31.2541
+],
+[
+"-1*VX + -27.7186",
+-29.9813
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "LugB",
+"distance": "3 mm",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": "YZ",
+"name": "CrossSkLF",
+"offset": "XR + 1*(CB - PLATE_T/2)"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"WALL_IN + 0.5",
+"(-R_OUT)"
+],
+[
+"SY",
+"(-R_OUT)"
+],
+[
+"SY",
+"R_OUT"
+],
+[
+"WALL_IN + 0.5",
+"R_OUT"
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+74.0,
+5
+],
+[
+80.0,
+5
+],
+[
+80.0,
+18
+],
+[
+77.0,
+21
+],
+[
+74.0,
+18
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+74.0,
+-29
+],
+[
+80.0,
+-29
+],
+[
+80.0,
+-16
+],
+[
+77.0,
+-13
+],
+[
+74.0,
+-16
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "CrossLF",
+"distance": "PLATE_T",
+"direction": "symmetric",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": "YZ",
+"name": "CrossSkLB",
+"offset": "XR + -1*(CB - PLATE_T/2)"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"WALL_IN + 0.5",
+"(-R_OUT)"
+],
+[
+"SY",
+"(-R_OUT)"
+],
+[
+"SY",
+"R_OUT"
+],
+[
+"WALL_IN + 0.5",
+"R_OUT"
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+74.0,
+5
+],
+[
+80.0,
+5
+],
+[
+80.0,
+18
+],
+[
+77.0,
+21
+],
+[
+74.0,
+18
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+74.0,
+-29
+],
+[
+80.0,
+-29
+],
+[
+80.0,
+-16
+],
+[
+77.0,
+-13
+],
+[
+74.0,
+-16
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "CrossLB",
+"distance": "PLATE_T",
+"direction": "symmetric",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "CrossTopL",
+"length": "(XR + CB) - (XR - CB)",
+"width": "(SY) - (WALL_IN + 0.5)",
+"height": "(R_OUT) - (R_OUT - DECK_T)",
+"center": [
+"((XR - CB) + (XR + CB))/2",
+"((WALL_IN + 0.5) + (SY))/2",
+"((R_OUT - DECK_T) + (R_OUT))/2"
+],
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "CrossBotL",
+"length": "(XR + CB) - (XR - CB)",
+"width": "(SY) - (WALL_IN + 0.5)",
+"height": "((-R_OUT) + DECK_T) - ((-R_OUT))",
+"center": [
+"((XR - CB) + (XR + CB))/2",
+"((WALL_IN + 0.5) + (SY))/2",
+"(((-R_OUT)) + ((-R_OUT) + DECK_T))/2"
+],
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "CrossWebL",
+"length": "(XR + CB - PLATE_T) - (XR - CB + PLATE_T)",
+"width": "(SY) - (WALL_IN + 0.5)",
+"height": "(1.2) - (-1.2)",
+"center": [
+"((XR - CB + PLATE_T) + (XR + CB - PLATE_T))/2",
+"((WALL_IN + 0.5) + (SY))/2",
+"((-1.2) + (1.2))/2"
+],
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": "YZ",
+"name": "CrossSkRF",
+"offset": "XR + 1*(CB - PLATE_T/2)"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"-SY",
+"(-R_OUT)"
+],
+[
+"-(WALL_IN + 0.5)",
+"(-R_OUT)"
+],
+[
+"-(WALL_IN + 0.5)",
+"R_OUT"
+],
+[
+"-SY",
+"R_OUT"
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-80.0,
+5
+],
+[
+-74.0,
+5
+],
+[
+-74.0,
+18
+],
+[
+-77.0,
+21
+],
+[
+-80.0,
+18
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-80.0,
+-29
+],
+[
+-74.0,
+-29
+],
+[
+-74.0,
+-16
+],
+[
+-77.0,
+-13
+],
+[
+-80.0,
+-16
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "CrossRF",
+"distance": "PLATE_T",
+"direction": "symmetric",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": "YZ",
+"name": "CrossSkRB",
+"offset": "XR + -1*(CB - PLATE_T/2)"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"-SY",
+"(-R_OUT)"
+],
+[
+"-(WALL_IN + 0.5)",
+"(-R_OUT)"
+],
+[
+"-(WALL_IN + 0.5)",
+"R_OUT"
+],
+[
+"-SY",
+"R_OUT"
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-80.0,
+5
+],
+[
+-74.0,
+5
+],
+[
+-74.0,
+18
+],
+[
+-77.0,
+21
+],
+[
+-80.0,
+18
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-80.0,
+-29
+],
+[
+-74.0,
+-29
+],
+[
+-74.0,
+-16
+],
+[
+-77.0,
+-13
+],
+[
+-80.0,
+-16
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "CrossRB",
+"distance": "PLATE_T",
+"direction": "symmetric",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "CrossTopR",
+"length": "(XR + CB) - (XR - CB)",
+"width": "(-(WALL_IN + 0.5)) - (-SY)",
+"height": "(R_OUT) - (R_OUT - DECK_T)",
+"center": [
+"((XR - CB) + (XR + CB))/2",
+"((-SY) + (-(WALL_IN + 0.5)))/2",
+"((R_OUT - DECK_T) + (R_OUT))/2"
+],
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "CrossBotR",
+"length": "(XR + CB) - (XR - CB)",
+"width": "(-(WALL_IN + 0.5)) - (-SY)",
+"height": "((-R_OUT) + DECK_T) - ((-R_OUT))",
+"center": [
+"((XR - CB) + (XR + CB))/2",
+"((-SY) + (-(WALL_IN + 0.5)))/2",
+"(((-R_OUT)) + ((-R_OUT) + DECK_T))/2"
+],
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "CrossWebR",
+"length": "(XR + CB - PLATE_T) - (XR - CB + PLATE_T)",
+"width": "(-(WALL_IN + 0.5)) - (-SY)",
+"height": "(1.2) - (-1.2)",
+"center": [
+"((XR - CB + PLATE_T) + (XR + CB - PLATE_T))/2",
+"((-SY) + (-(WALL_IN + 0.5)))/2",
+"((-1.2) + (1.2))/2"
+],
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "CrossStrap",
+"length": "(XR + CB) - (XR - CB)",
+"width": "(WALL_IN) - (-WALL_IN)",
+"height": "((-R_OUT) + DECK_T) - ((-R_OUT))",
+"center": [
+"((XR - CB) + (XR + CB))/2",
+"((-WALL_IN) + (WALL_IN))/2",
+"(((-R_OUT)) + ((-R_OUT) + DECK_T))/2"
+],
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": "YZ",
+"name": "SideRingSk",
+"offset": "XR - CB"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"1*SY + R_OUT*0.7071067811865475",
+"R_OUT*0.7071067811865475"
+],
+[
+"1*SY + R_OUT*1.41421356 - (R_OUT)",
+"R_OUT"
+],
+[
+"1*SY - (R_OUT*1.41421356 - (R_OUT))",
+"R_OUT"
+],
+[
+"1*SY - R_OUT*0.7071067811865475",
+"R_OUT*0.7071067811865475"
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+"1*SY - R_OUT*0.7071067811865475",
+"R_OUT*0.7071067811865475"
+],
+"end": [
+"1*SY - R_OUT*0.7071067811865475",
+"-R_OUT*0.7071067811865475"
+],
+"through": [
+"1*SY - R_OUT",
+0
+]
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"1*SY - R_OUT*0.7071067811865475",
+"-R_OUT*0.7071067811865475"
+],
+[
+"1*SY - (R_OUT*1.41421356 + ((-R_OUT)))",
+"(-R_OUT)"
+],
+[
+"1*SY + R_OUT*1.41421356 + ((-R_OUT))",
+"(-R_OUT)"
+],
+[
+"1*SY + R_OUT*0.7071067811865475",
+"-R_OUT*0.7071067811865475"
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+"1*SY + R_OUT*0.7071067811865475",
+"-R_OUT*0.7071067811865475"
+],
+"end": [
+"1*SY + R_OUT*0.7071067811865475",
+"R_OUT*0.7071067811865475"
+],
+"through": [
+"1*SY + R_OUT",
+0
+]
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"-1*SY + R_OUT*0.7071067811865475",
+"R_OUT*0.7071067811865475"
+],
+[
+"-1*SY + R_OUT*1.41421356 - (R_OUT)",
+"R_OUT"
+],
+[
+"-1*SY - (R_OUT*1.41421356 - (R_OUT))",
+"R_OUT"
+],
+[
+"-1*SY - R_OUT*0.7071067811865475",
+"R_OUT*0.7071067811865475"
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+"-1*SY - R_OUT*0.7071067811865475",
+"R_OUT*0.7071067811865475"
+],
+"end": [
+"-1*SY - R_OUT*0.7071067811865475",
+"-R_OUT*0.7071067811865475"
+],
+"through": [
+"-1*SY - R_OUT",
+0
+]
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"-1*SY - R_OUT*0.7071067811865475",
+"-R_OUT*0.7071067811865475"
+],
+[
+"-1*SY - (R_OUT*1.41421356 + ((-R_OUT)))",
+"(-R_OUT)"
+],
+[
+"-1*SY + R_OUT*1.41421356 + ((-R_OUT))",
+"(-R_OUT)"
+],
+[
+"-1*SY + R_OUT*0.7071067811865475",
+"-R_OUT*0.7071067811865475"
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+"-1*SY + R_OUT*0.7071067811865475",
+"-R_OUT*0.7071067811865475"
+],
+"end": [
+"-1*SY + R_OUT*0.7071067811865475",
+"R_OUT*0.7071067811865475"
+],
+"through": [
+"-1*SY + R_OUT",
+0
+]
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "SideRings",
+"distance": "2*CB",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "FinL",
+"length": "(XR - 2) - (XR - CB)",
+"width": "(1*SY + 1.5) - (1*SY - 1.5)",
+"height": "(R_OUT + 7) - (R_OUT - 4)",
+"center": [
+"((XR - CB) + (XR - 2))/2",
+"((1*SY - 1.5) + (1*SY + 1.5))/2",
+"((R_OUT - 4) + (R_OUT + 7))/2"
+],
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "FinHoleL10",
+"length": "(XR - 8.4) - (XR - 11.6)",
+"width": "(1*SY + 3) - (1*SY - 3)",
+"height": "(R_OUT + 4) - (R_OUT + 2.2)",
+"center": [
+"((XR - 11.6) + (XR - 8.4))/2",
+"((1*SY - 3) + (1*SY + 3))/2",
+"((R_OUT + 2.2) + (R_OUT + 4))/2"
+],
+"operation": "cut",
+"targets": [
+"Frame"
+]
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "FinHoleL5",
+"length": "(XR - 3.4) - (XR - 6.6)",
+"width": "(1*SY + 3) - (1*SY - 3)",
+"height": "(R_OUT + 4) - (R_OUT + 2.2)",
+"center": [
+"((XR - 6.6) + (XR - 3.4))/2",
+"((1*SY - 3) + (1*SY + 3))/2",
+"((R_OUT + 2.2) + (R_OUT + 4))/2"
+],
+"operation": "cut",
+"targets": [
+"Frame"
+]
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "FinR",
+"length": "(XR - 2) - (XR - CB)",
+"width": "(-1*SY + 1.5) - (-1*SY - 1.5)",
+"height": "(R_OUT + 7) - (R_OUT - 4)",
+"center": [
+"((XR - CB) + (XR - 2))/2",
+"((-1*SY - 1.5) + (-1*SY + 1.5))/2",
+"((R_OUT - 4) + (R_OUT + 7))/2"
+],
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "FinHoleR10",
+"length": "(XR - 8.4) - (XR - 11.6)",
+"width": "(-1*SY + 3) - (-1*SY - 3)",
+"height": "(R_OUT + 4) - (R_OUT + 2.2)",
+"center": [
+"((XR - 11.6) + (XR - 8.4))/2",
+"((-1*SY - 3) + (-1*SY + 3))/2",
+"((R_OUT + 2.2) + (R_OUT + 4))/2"
+],
+"operation": "cut",
+"targets": [
+"Frame"
+]
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "FinHoleR5",
+"length": "(XR - 3.4) - (XR - 6.6)",
+"width": "(-1*SY + 3) - (-1*SY - 3)",
+"height": "(R_OUT + 4) - (R_OUT + 2.2)",
+"center": [
+"((XR - 6.6) + (XR - 3.4))/2",
+"((-1*SY - 3) + (-1*SY + 3))/2",
+"((R_OUT + 2.2) + (R_OUT + 4))/2"
+],
+"operation": "cut",
+"targets": [
+"Frame"
+]
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "CamShelf",
+"length": "(CAM_X1) - (CAM_X0)",
+"width": "(CAM_W/2) - (-CAM_W/2)",
+"height": "(CAM_Z + DECK_T) - (CAM_Z)",
+"center": [
+"((CAM_X0) + (CAM_X1))/2",
+"((-CAM_W/2) + (CAM_W/2))/2",
+"((CAM_Z) + (CAM_Z + DECK_T))/2"
+],
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": "YZ",
+"name": "CamGussetSk0",
+"offset": "37.2"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"-CAM_W/2",
+"CAM_Z"
+],
+[
+"CAM_W/2",
+"CAM_Z"
+],
+[
+"CAM_W/2 - (CAM_Z - BOX_TOP)",
+"BOX_TOP"
+],
+[
+"-(CAM_W/2 - (CAM_Z - BOX_TOP))",
+"BOX_TOP"
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "CamGusset0",
+"distance": "2.4 mm",
+"direction": "symmetric",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": "YZ",
+"name": "CamGussetSk1",
+"offset": "51.0"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"-CAM_W/2",
+"CAM_Z"
+],
+[
+"CAM_W/2",
+"CAM_Z"
+],
+[
+"CAM_W/2 - (CAM_Z - BOX_TOP)",
+"BOX_TOP"
+],
+[
+"-(CAM_W/2 - (CAM_Z - BOX_TOP))",
+"BOX_TOP"
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "CamGusset1",
+"distance": "2.4 mm",
+"direction": "symmetric",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": "YZ",
+"name": "CamGussetSk2",
+"offset": "64.8"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"-CAM_W/2",
+"CAM_Z"
+],
+[
+"CAM_W/2",
+"CAM_Z"
+],
+[
+"CAM_W/2 - (CAM_Z - BOX_TOP)",
+"BOX_TOP"
+],
+[
+"-(CAM_W/2 - (CAM_Z - BOX_TOP))",
+"BOX_TOP"
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "CamGusset2",
+"distance": "2.4 mm",
+"direction": "symmetric",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "CamSlot40-12",
+"length": "(41.2) - (38.8)",
+"width": "(-9.5) - (-14.5)",
+"height": "(CAM_Z + DECK_T + 1) - (CAM_Z - 1)",
+"center": [
+"((38.8) + (41.2))/2",
+"((-14.5) + (-9.5))/2",
+"((CAM_Z - 1) + (CAM_Z + DECK_T + 1))/2"
+],
+"operation": "cut",
+"targets": [
+"Frame"
+]
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "CamSlot4012",
+"length": "(41.2) - (38.8)",
+"width": "(14.5) - (9.5)",
+"height": "(CAM_Z + DECK_T + 1) - (CAM_Z - 1)",
+"center": [
+"((38.8) + (41.2))/2",
+"((9.5) + (14.5))/2",
+"((CAM_Z - 1) + (CAM_Z + DECK_T + 1))/2"
+],
+"operation": "cut",
+"targets": [
+"Frame"
+]
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "CamSlot62-12",
+"length": "(63.2) - (60.8)",
+"width": "(-9.5) - (-14.5)",
+"height": "(CAM_Z + DECK_T + 1) - (CAM_Z - 1)",
+"center": [
+"((60.8) + (63.2))/2",
+"((-14.5) + (-9.5))/2",
+"((CAM_Z - 1) + (CAM_Z + DECK_T + 1))/2"
+],
+"operation": "cut",
+"targets": [
+"Frame"
+]
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "CamSlot6212",
+"length": "(63.2) - (60.8)",
+"width": "(14.5) - (9.5)",
+"height": "(CAM_Z + DECK_T + 1) - (CAM_Z - 1)",
+"center": [
+"((60.8) + (63.2))/2",
+"((9.5) + (14.5))/2",
+"((CAM_Z - 1) + (CAM_Z + DECK_T + 1))/2"
+],
+"operation": "cut",
+"targets": [
+"Frame"
+]
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "PostWebX",
+"length": "(POST_X + 20) - (POST_X - 20)",
+"width": "(2) - (-2)",
+"height": "((TOWER_TOP - 12)) - (BOX_TOP - 1)",
+"center": [
+"((POST_X - 20) + (POST_X + 20))/2",
+"((-2) + (2))/2",
+"((BOX_TOP - 1) + ((TOWER_TOP - 12)))/2"
+],
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "PostWebY",
+"length": "(POST_X + 1.2) - (POST_X - 1.2)",
+"width": "(8) - (-8)",
+"height": "((TOWER_TOP - 12)) - (BOX_TOP)",
+"center": [
+"((POST_X - 1.2) + (POST_X + 1.2))/2",
+"((-8) + (8))/2",
+"((BOX_TOP) + ((TOWER_TOP - 12)))/2"
+],
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": "XZ",
+"name": "PostGusset+1Sk",
+"offset": "1*1.2"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"POST_X - 20",
+"-(BOX_TOP)"
+],
+[
+"POST_X + 20",
+"-(BOX_TOP)"
+],
+[
+"POST_X",
+"-(BOX_TOP + 14)"
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "PostGusset+1",
+"distance": "2.4 mm",
+"direction": "symmetric",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": "XZ",
+"name": "PostGusset-1Sk",
+"offset": "-1*1.2"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"POST_X - 20",
+"-(BOX_TOP)"
+],
+[
+"POST_X + 20",
+"-(BOX_TOP)"
+],
+[
+"POST_X",
+"-(BOX_TOP + 14)"
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "PostGusset-1",
+"distance": "2.4 mm",
+"direction": "symmetric",
+"operation": "join",
+"targets": [
+"Frame"
+],
+"touching": "one_body"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": "XZ",
+"name": "ClampSkA",
+"offset": "0"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"POST_X - 4",
+"-(TOWER_TOP - 26)"
+],
+[
+"POST_X + 4",
+"-(TOWER_TOP - 26)"
+],
+[
+"POST_X + 20",
+"-(TOWER_TOP - 10)"
+],
+[
+"POST_X + 20",
+"-(TOWER_TOP)"
+],
+[
+"POST_X - 20",
+"-(TOWER_TOP)"
+],
+[
+"POST_X - 20",
+"-(TOWER_TOP - 10)"
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "ClampA",
+"distance": "38 mm",
+"direction": "symmetric",
+"operation": "new",
+"body_name": "ClampA"
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": "YZ",
+"name": "ClampSkB",
+"offset": "POST_X"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+-8,
+"TOWER_TOP - 26"
+],
+[
+8,
+"TOWER_TOP - 26"
+],
+[
+19,
+"TOWER_TOP - 15"
+],
+[
+19,
+"TOWER_TOP"
+],
+[
+-19,
+"TOWER_TOP"
+],
+[
+-19,
+"TOWER_TOP - 15"
+]
+],
+"closed": true
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "ClampB",
+"distance": "60 mm",
+"direction": "symmetric",
+"operation": "new",
+"body_name": "ClampB"
+}
+},
+{
+"command": "solid.combine",
+"params": {
+"target": "ClampA",
+"tools": [
+"ClampB"
+],
+"operation": "intersect"
+}
+},
+{
+"command": "solid.combine",
+"params": {
+"target": "Frame",
+"tools": [
+"ClampA"
+],
+"operation": "join"
+}
+},
+{
+"command": "solid.cylinder",
+"params": {
+"name": "VBoreF",
+"radius": "R_IN",
+"height": "TOWER_TOP + 40 + R_OUT + 1",
+"base": [
+"1*VX",
+0,
+"(-R_OUT) - 1"
+],
+"axis": "Z",
+"operation": "cut",
+"targets": [
+"Frame"
+]
+}
+},
+{
+"command": "solid.cylinder",
+"params": {
+"name": "VBoreB",
+"radius": "R_IN",
+"height": "TOWER_TOP + 40 + R_OUT + 1",
+"base": [
+"-1*VX",
+0,
+"(-R_OUT) - 1"
+],
+"axis": "Z",
+"operation": "cut",
+"targets": [
+"Frame"
+]
+}
+},
+{
+"command": "sketch.create",
+"params": {
+"plane": "YZ",
+"name": "SideBoreSk",
+"offset": "XR - CB - 1"
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"1*SY + R_IN*0.7071067811865475",
+"R_IN*0.7071067811865475"
+],
+[
+"1*SY + R_IN*1.41421356 - (R_OUT - 2)",
+"R_OUT - 2"
+],
+[
+"1*SY - (R_IN*1.41421356 - (R_OUT - 2))",
+"R_OUT - 2"
+],
+[
+"1*SY - R_IN*0.7071067811865475",
+"R_IN*0.7071067811865475"
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+"1*SY - R_IN*0.7071067811865475",
+"R_IN*0.7071067811865475"
+],
+"end": [
+"1*SY + R_IN*0.7071067811865475",
+"R_IN*0.7071067811865475"
+],
+"through": [
+"1*SY",
+"-R_IN"
+]
+}
+},
+{
+"command": "sketch.line",
+"params": {
+"points": [
+[
+"-1*SY + R_IN*0.7071067811865475",
+"R_IN*0.7071067811865475"
+],
+[
+"-1*SY + R_IN*1.41421356 - (R_OUT - 2)",
+"R_OUT - 2"
+],
+[
+"-1*SY - (R_IN*1.41421356 - (R_OUT - 2))",
+"R_OUT - 2"
+],
+[
+"-1*SY - R_IN*0.7071067811865475",
+"R_IN*0.7071067811865475"
+]
+]
+}
+},
+{
+"command": "sketch.arc.three_point",
+"params": {
+"start": [
+"-1*SY - R_IN*0.7071067811865475",
+"R_IN*0.7071067811865475"
+],
+"end": [
+"-1*SY + R_IN*0.7071067811865475",
+"R_IN*0.7071067811865475"
+],
+"through": [
+"-1*SY",
+"-R_IN"
+]
+}
+},
+{
+"command": "sketch.finish",
+"params": {}
+},
+{
+"command": "solid.extrude",
+"params": {
+"name": "SideBores",
+"distance": "2*CB + 2",
+"operation": "cut",
+"targets": [
+"Frame"
+]
+}
+},
+{
+"command": "solid.cylinder",
+"params": {
+"name": "PodBodyL",
+"radius": "POD_OD/2 + 1 mm",
+"height": "130 - CB",
+"base": [
+"XR - 130",
+"1*SY",
+0
+],
+"axis": "X",
+"operation": "cut",
+"targets": [
+"Frame"
+]
+}
+},
+{
+"command": "solid.cylinder",
+"params": {
+"name": "IntakeL",
+"radius": "R_IN",
+"height": "60 mm",
+"base": [
+"XR + CB",
+"1*SY",
+0
+],
+"axis": "X",
+"operation": "cut",
+"targets": [
+"Frame"
+]
+}
+},
+{
+"command": "solid.cylinder",
+"params": {
+"name": "PodBodyR",
+"radius": "POD_OD/2 + 1 mm",
+"height": "130 - CB",
+"base": [
+"XR - 130",
+"-1*SY",
+0
+],
+"axis": "X",
+"operation": "cut",
+"targets": [
+"Frame"
+]
+}
+},
+{
+"command": "solid.cylinder",
+"params": {
+"name": "IntakeR",
+"radius": "R_IN",
+"height": "60 mm",
+"base": [
+"XR + CB",
+"-1*SY",
+0
+],
+"axis": "X",
+"operation": "cut",
+"targets": [
+"Frame"
+]
+}
+},
+{
+"command": "solid.cylinder",
+"params": {
+"name": "TetherGroove",
+"radius": "7.5 mm",
+"height": "60 mm",
+"base": [
+"POST_X - 30",
+-5,
+"TOWER_TOP"
+],
+"axis": "X",
+"operation": "cut",
+"targets": [
+"Frame"
+]
+}
+},
+{
+"command": "solid.cylinder",
+"params": {
+"name": "CamCableGroove",
+"radius": "4 mm",
+"height": "60 mm",
+"base": [
+"POST_X - 30",
+12,
+"TOWER_TOP"
+],
+"axis": "X",
+"operation": "cut",
+"targets": [
+"Frame"
+]
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "PostSlot-12",
+"length": "(POST_X + -9.5) - (POST_X + -14.5)",
+"width": "(25) - (-25)",
+"height": "(TOWER_TOP - 11) - (TOWER_TOP - 13.4)",
+"center": [
+"((POST_X + -14.5) + (POST_X + -9.5))/2",
+"((-25) + (25))/2",
+"((TOWER_TOP - 13.4) + (TOWER_TOP - 11))/2"
+],
+"operation": "cut",
+"targets": [
+"Frame"
+]
+}
+},
+{
+"command": "solid.box",
+"params": {
+"name": "PostSlot12",
+"length": "(POST_X + 14.5) - (POST_X + 9.5)",
+"width": "(25) - (-25)",
+"height": "(TOWER_TOP - 11) - (TOWER_TOP - 13.4)",
+"center": [
+"((POST_X + 9.5) + (POST_X + 14.5))/2",
+"((-25) + (25))/2",
+"((TOWER_TOP - 13.4) + (TOWER_TOP - 11))/2"
+],
+"operation": "cut",
+"targets": [
+"Frame"
+]
+}
+}
+]
+}
