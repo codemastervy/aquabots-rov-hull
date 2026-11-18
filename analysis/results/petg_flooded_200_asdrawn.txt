@@ -1,0 +1,11 @@
+=== PETG, 15 % gyroid parts FLOODED (drain holes), noodle 56 x 200 mm, trim: new frame ===
+mass in air 2136 g; net -235 g (SINKS)
+centre of buoyancy 20.1 mm above the centre of gravity, +1.3 mm ahead
+noodle: each 1 mm = 2.39 g of lift; for +15 g change the length by +105 mm
+at rest: roll -0.8 deg, pitch -5.0 deg, drifting -24.3 cm/s (+ = up)
+forward 0.59 m/s (tilt +3.3 deg) | reverse 0.49 m/s (-0.4) | up 0.41 m/s (-5.4) | down 0.47 m/s (-4.7) | spin 267 deg/s | turn radius 0.21 m
+tilt stick 40%: holds 19 deg
+tilt stick 100%: holds 42 deg
+released on its side: upright after 0.6 s
+released upside down: upright after 1.6 s
+released nose down 90 deg: upright after 0.6 s

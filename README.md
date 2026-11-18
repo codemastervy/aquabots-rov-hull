@@ -1,164 +1,122 @@
-# Aqua Bots ROV v15: open frame + pool noodles
+# Aqua Bots ROV: the new frame (pool noodle on top)
 
-One printed frame, four of our thruster pods, two pieces of pool noodle and a bag of zip ties.
-There are no screws, glue, ballast, foam blocks or sealed hull.
+Our own design, made in Onshape: the v13 X-shaped frame with a pool noodle on top, four of our motor holsters and a
+printed skid underneath. Every part except the noodle is printed separately.
 
-![v15 assembled](docs/rov_v15_iso.png)
+![the new frame](docs/iso.png)
 
-It uses the same four thrusters as the current robot: modified SEAFLO SFBP1-G1100-01 1100 GPH bilge-pump motors with
-55 mm props, in our "motor caseing v1" print. Motor numbering is unchanged: **1 rear-up, 2 front-up, 3 right, 4 left**.
+![all sides](docs/views.png)
 
 | | |
 |---|---|
-| Printed parts | 1 (the frame), 249 × 245 × 146 mm, fits the H2S plate |
-| Filament | PETG 382 g or PLA 388 g, about 10.5 h on a Bambu H2S |
-| Hardware | about 20 zip ties (2.5 mm wide, 150-200 mm long) |
-| Floats | 2 × 126 mm of standard pool noodle (65 mm, hollow) |
-| Mass in air | about 2.2 kg with pods, camera and wiring |
-| Trim | slightly positive at the surface (+15 g); level; self-rights |
+| Printed parts | frame, 4 motor holsters, skid (all printed separately) |
+| Size | 255 × 322 × 226 mm with the skid; the frame alone is 254 × 294 × 125 mm and fits the H2S plate |
+| Float | 1 pool noodle on top, 56 mm (see [Noodle length](#noodle-length): it needs to be about 300 mm) |
+| Motors | modified SEAFLO SFBP1-G1100-01 1100 GPH pumps: 2 side (forward/back), front and rear (up/down) |
+| Software | pick **NEW FRAME** on SETUP › EXTRAS › FRAME (in [underwater-rov](https://github.com/codemastervy/underwater-rov)) |
 
-**All designs, one branch each (pick one):**
+The earlier designs are kept on their own branches: [`v15-open-frame`](../../tree/v15-open-frame),
+[`v16-classic`](../../tree/v16-classic), [`v17-v13-shape`](../../tree/v17-v13-shape),
+[`v14-flooded-hull`](../../tree/v14-flooded-hull).
 
-| Design | Branch | Look | Filament (PETG) | Speed fwd | Upright from upside down |
-|---|---|---|---|---|---|
-| v15 open frame | `main` (this page) | open frame, noodles on top | 382 g | 0.70 m/s | 1.2 s |
-| v16 classic | [`v16-classic`](../../tree/v16-classic) | v13 shape, noodles in saddles on top | 359 g | 0.72 m/s | 1.2 s |
-| v17 v13 shape | [`v17-v13-shape`](../../tree/v17-v13-shape) | v13 shape, noodles hidden inside | 325 g | 0.74 m/s | 1.9 s |
-| v14 flooded hull | [`v14-flooded-hull`](../../tree/v14-flooded-hull) | streamlined hull, foam + steel ballast | see branch | see branch | see branch |
+## Before you print: 3 things
 
-On the control screen, pick the design you built under **SETUP > DESIGN**. It sets that design's motor trim.
-
-## Why this design
-
-We based it on what already works:
-
-* **Our current robot**: the same 4-thruster layout, the same pods and the same control software (see the change to `config.toml` below).
-* **SeaPerch**, the standard school ROV: pool-noodle floats, bilge-pump motors, an open frame, and trimming by sliding the floats.
-* **BlueROV2**: an open frame with the buoyancy on top and the weight low, so it rights itself. The tether is clamped to the frame so a pull never reaches the wires.
-
-Pool noodles are the float because we already have them, they cost nothing and they're easy to cut. Trimming is done
-in the pool by changing the noodle length and sliding the noodles forward or back. No ballast is needed.
+1. **Drill drain holes** (about 3 mm) in the frame, the holsters and the skid. At 15 % gyroid the inside is mostly
+   air. Water seeps in during a run, so without holes the robot starts out floating (+340 g, nose down 11°) and gets
+   heavier as it fills. It can also get stuck on its side. With drain holes they fill straight away and it weighs
+   the same on every dive.
+2. **Make the noodle about 300 mm long** (the model has 200 mm). With 200 mm and flooded parts it **sinks** (−235 g).
+3. **Re-export the skid** from Onshape as one joined part (Boolean union). In this STL its pipes and fittings
+   overlap without being joined, and some pieces aren't closed. Bambu Studio patches it to slice, but the printability
+   check fails it.
 
 ## Print it
 
-Open `print/petg/rov_v15_PETG.gcode.3mf` (or `print/pla/rov_v15_PLA.gcode.3mf`) in Bambu Studio and send it to the printer.
-To slice it yourself, use `3MF/frame.3mf` or `STL/frame.stl` with these settings:
+Sliced files (Bambu H2S, 0.4 nozzle, 0.20 mm, **15 % gyroid**, 3 walls, tree supports, Textured PEI):
+`print/petg/` and `print/pla/`. To slice yourself use `design/parts/*.stl` with `print/process.json`.
+
+| Part | Qty | PETG | PLA | Time each (PETG) |
+|---|---|---|---|---|
+| Frame (`frame.stl`) | 1 | 280 g | 279 g | 11.0 h |
+| Motor holster (`pod_*.stl`) | 4 | 113 g | 114 g | 3.2 h |
+| Skid (`skid.stl`) | 1 | 206 g | 208 g | 7.6 h |
+| **Total** | | **936 g** | **941 g** | **about 31.5 h** |
+
+Weights include supports. Without supports the frame would print 49 mm bridges and flat undersides in mid-air.
+
+**Printability check** (`analysis/results/print_check.txt`):
+
+* **Frame:** passes, 1 solid, walls 3–5 mm. Print it upright as exported (the best of 6 orientations) with
+  supports: 13 overhangs and 10 bridges need them.
+* **Holster:** passes, but the thinnest wall is 1.0 mm and one edge is knife-sharp. Lay it on its flat end.
+* **Skid:** **fails**: 14 places where the surface passes through itself (see point 3 above).
+
+## How it behaves (simulation)
+
+6-DOF simulation (`analysis/sim.py`; it models buoyancy, drag on every part, added mass and thruster lag).
+PETG, 15 % gyroid parts flooded (drain holes), 56 × 320 mm noodle, motor trim from the software (NEW FRAME):
+
+| | New frame |
+|---|---|
+| Floats | +52 g (slightly positive: it rises slowly if anything fails) |
+| Centre of buoyancy above the centre of gravity | 28 mm |
+| Sits at rest | level (pitch −4°, roll 0°) |
+| Forward / reverse | 0.58 / 0.49 m/s, within 2° of level |
+| Up / down | 0.49 / 0.38 m/s, within 5° of level |
+| Spin / turn radius | 266 °/s / 0.22 m |
+| Tilt stick 40 % / 100 % | holds 13° / 25° |
+| Upright from on its side / upside down / nose down | 0.4 s / 1.2 s / 0.5 s |
+
+PLA is the same within 1 % (`analysis/results/pla_flooded_320_trim.txt`).
+
+**Other cases** (all in `analysis/results/`):
+
+| Case | Floats? | Notes |
+|---|---|---|
+| As drawn: 200 mm noodle, parts flooded | **sinks, −235 g** | needs about 100 mm more noodle |
+| As drawn: 200 mm noodle, air sealed in the parts | +341 g | nose down 11°; **can't right itself from its side**; heavier as it floods |
+| 320 mm noodle, motors untrimmed (v13 settings) | +52 g | tilts 27° at full forward; **a full tilt stick flips it over** |
+| 360 mm noodle with a 20 mm hole | +38 g | same as the 320 mm solid noodle |
+
+### Software trim (NEW FRAME)
 
 | Setting | Value | Why |
 |---|---|---|
-| Printer / process | Bambu Lab H2S 0.4 nozzle, 0.20 mm Standard | |
-| Filament | Bambu PETG HF (best) or PLA Basic | PETG copes better with sun, knocks and water; PLA is fine for pool sessions |
-| Plate | **Textured PEI** | Bambu Studio won't put PETG on the Cool Plate |
-| Infill | **100 %**, zig-zag (rectilinear) | Thin walls; solid parts don't soak up water |
-| Walls | 3 loops | |
-| Supports | **off** | Every window has a pointed (45°) top and the pod lips sit on 45° funnels |
-| Brim | auto | |
-| Orientation | as exported: tray and skirts on the plate | |
+| Tilt power | 0.25 | it rights itself gently; at 1.0 a full tilt stick loops it |
+| Front up motor | 0.75 | it climbs and dives level |
+| Rear up motor | 1.00 | |
+| Level when driving | 0.30 | the side motors sit above the weight, so it would tilt 27° when driving |
 
-The printability check passed with no errors (79 mm² of small overhangs and 16 mm bridges, both fine on an H2S).
-Let it cool on the plate before you take it off.
+Fine-tune these in the pool with **TRIM ▸** (SETUP › DESIGN).
 
-## Build it
+### Noodle length
 
-![frame](docs/frame_iso.png)
+Each 1 mm of a 56 mm noodle lifts 2.4 g (2.1 g if it has a 20 mm hole). With flooded parts:
 
-### 1. Pods (4 zip ties)
-* **Up/down pods (front motor 2, rear motor 1)**: drop in from the top, **prop duct up, motor down**. They sit on a
-  lip 14 mm above the table. Under the lip is a skirt with a notch facing the middle of the robot. The motor wires leave
-  through that notch, so they aren't pinched under the pod. Put one zip tie through the two slots near the top of the tube
-  and around a cage bar of the pod.
-* **Side pods (motor 4 left, motor 3 right)**: slide in from the front, **prop duct forward**, until the motor
-  sleeve stops on the rear lip. Put one zip tie through the front band's slots and around a cage bar.
+* **solid noodle: about 300 mm** (320 mm floats +52 g)
+* **noodle with a 20 mm hole: about 350 mm**
 
-### 2. Wiring
-* **Splice tray**: the floor between the up/down pods, with low walls and drain holes. Lay the 8 motor-wire-to-tether
-  splices (heat-shrunk) here and hold them down with 2 zip ties through the floor slots. They stay low, which helps
-  the robot right itself, and they're kept out of the props.
-* **Wire clips**: 7 slots along the top of each side rail. Zip-tie the side-pod leads along the rail to the tray.
-* **Tether + camera post**: the post in the middle rises to 72 mm with two grooves along the robot. The big groove takes
-  the tether (up to 14 mm), the small one the camera cable (up to 7 mm). Put one zip tie through each pair of slots and
-  pull it tight. **Leave a slack loop between the post and the tray**: if someone pulls the tether, the post takes the load, not the
-  splices. The post is high and central, so a pull doesn't tip the robot nose-down.
-
-### 3. Camera
-The shelf at the front (36 × 40 mm, 4 zip-tie slots) is in front of and below the front up/down pod, so the props stay
-out of the picture. The bumper in front protects the lens. Zip-tie the camera down and run its cable along the rail
-to the post.
-
-### 4. Pool noodles (4 zip ties)
-1. Cut **two pieces 126 mm long** from a 65 mm noodle (125 mm for a PLA frame). A bread knife works well. Round or taper
-   the ends if you like: it cuts drag a little and makes no difference to the lift.
-2. Lay them in the saddles above the side pods, **centred 4 mm behind the middle of the frame** (the piece runs from 67 mm
-   behind centre to 59 mm in front).
-3. Zip-tie each piece through the two saddle slots. Don't crush the foam.
-
-The saddles take any noodle from 55 to 75 mm. Different noodles float differently, so plan to trim in the pool:
-
-### 5. Trim in the pool (10 minutes)
-* **Sinks** → add noodle length (each 1 mm on both pieces ≈ 6 g of lift), or use fatter noodle.
-* **Shoots up** → cut the noodles shorter. Aim for it to rise slowly, about a hand-length every 2 s.
-* **Nose down** → slide both noodles forward. **Nose up** → slide them back.
-* **Leans to one side** → slide that side's noodle outward or make it a little longer.
-
-Noodle foam squashes with depth (about 4% at 1 m, 12% at 3 m). The robot becomes slightly heavy below about 0.5 m
-(−15 g at 1 m, −75 g at 3 m), which the up thrusters easily cover. Lose power at depth and it **sinks slowly**,
-so pull it back on the tether. In a school pool (≤ 2 m) this doesn't matter.
-
-### 6. Software
-Pick **v15 open frame** under SETUP > DESIGN on the control screen. It sets the pitch mix to **0.4**, the same as for v14. At full pitch gain
-(1.0) a full-tilt stick flips the robot over. At 0.4 a full stick holds about 20° of tilt. Nothing else changes.
-(The autopilot stays off the controller, as before.)
-
-## How we know it works
-
-All numbers below come from simulation and analysis, not a pool test yet. Weigh one pod and test it in the pool before you trust them.
-
-**6-DOF simulation** (`analysis/sim.py`; it models buoyancy, drag on every part, added mass and thruster lag):
-
-| | v15 | old v13 |
-|---|---|---|
-| Forward / reverse | 0.70 / 0.59 m/s | 0.80 / 0.67 m/s |
-| Up / down | 0.60 / 0.49 m/s | 0.75 / 0.61 m/s |
-| Pitch at full forward | −0.8° | +0.8° |
-| Spin | 412 °/s | 403 °/s |
-| Turn radius (fwd + half yaw) | 0.17 m | 0.23 m |
-| Centre of buoyancy above centre of gravity | 28 mm | |
-| Upright from upside down / on its side | 1.2 s / 0.4 s | |
-
-v15 is **about 10–20 % slower** than the old robot in a straight line, because the exposed pods and floats make more drag.
-In return it turns tighter, rights itself, sits level, and is one print plus zip ties. Drag is the least certain
-number in the model, so in the pool the gap could be bigger or smaller.
-
-**Strength (FEA, CalculiX)**: the frame is held at the pod bands, with the load on the tether post.
-
-| Load case | PETG safety factor | PLA safety factor |
-|---|---|---|
-| Lifting the whole robot (2.2 kg × 2) by the tether | 35 | 40 |
-| 30 N sideways yank on the tether | 17 | 19 |
-
-Material values used are conservative for printed parts (PETG yield 40 MPa, PLA 45 MPa).
-
-**Fit**: the full assembly (frame, 4 pods, 2 noodles) passes an interference check, so no two parts overlap.
+Cut it a little long and trim in the pool: **sinks** → longer; **shoots up** → shorter (aim for a slow rise, about a
+hand-length every 2 s); **nose down** → slide it forward; **nose up** → slide it back.
 
 ## Assumptions to check
-* Pump motor ≈ 300 g per pod (stock 350 g minus the strainer base) and thrust ≈ 5 N forward / 3.5 N reverse. **Weigh a pod and adjust `analysis/sim.py`.**
-* Pool noodle: 65 mm OD, 20 mm hole, about 30 kg/m³ foam.
-* Camera ≈ 35 g. The splices and wiring in the tray ≈ 60 g.
-* Tether near neutral in water. A heavy tether pulls the back down: slide the noodles back a bit.
+
+* Each motor weighs 300 g in air and about 116 g in water (SEAFLO 1100 with the strainer cut off). **This is the
+  biggest unknown.** Hang a motor from a kitchen scale into a bucket of water and update `pump_motor_kg` in
+  `analysis/sim_core.py`.
+* Thrust 5 N forward / 3.5 N reverse per motor.
+* Pool noodle foam 30 kg/m³; camera 35 g at the front; wiring 60 g.
+* Forward is the end without the small tether ring.
 
 ## Files
 
 | Path | What |
 |---|---|
-| `src/params.py` | every dimension (change things here) |
-| `src/rov.py` | the frame and assembly (build123d, run with `cad run src/rov.py`) |
-| `src/print_parts.py` | the frame placed for printing |
-| `rov_v15.sc` | the same frame in **SolidCraft**, parametric (`ZB`, `WIRE_GAP`, `VX`, `BAND_ID` …) |
-| `STL/`, `3MF/`, `STEP/` | exports (`STEP/rov_v15_assembly.step` = everything together) |
-| `print/` | sliced files for PETG and PLA, the Bambu presets, and `flatten.py`, which rebuilds the presets |
-| `analysis/` | simulation (`sim.py`, results `sim_petg.txt` / `sim_pla.txt`), mass properties, FEA studies + results |
-| `docs/` | pictures and `rov_v15.glb` (3D view) |
-| `ref/` | our current robot (`aqua_bots_v13.stl`) and pod (`motor_caseing_v1.stl`) |
-
-Sources for design ideas: REA "ROV Buoyancy & Ballast" guide (learning.rea.org.au), RoboNation SeaPerch team
-engineering notebooks, BlueROV2 frame layout.
+| `design/aqua_bot_v13-.stl` | the whole design as exported from Onshape |
+| `design/parts/` | each part on its own: `frame`, `pod_left/right/front/rear`, `noodle`, `skid` |
+| `print/` | sliced files (`petg/`, `pla/`) and the Bambu presets (`process.json` = 15 % gyroid + supports) |
+| `analysis/sim.py` | the simulation: `cad run analysis/sim.py` (options such as `--pla`, `--sealed`, `--noodle-len=300` are listed at the top of the file) |
+| `analysis/sim_core.py` | the 6-DOF simulator and the motor/thrust assumptions |
+| `analysis/results/` | simulation results for each case and the printability check |
+| `docs/` | pictures |
+| `ref/` | the old v13 frame and the motor casing |

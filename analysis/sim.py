@@ -1,406 +1,177 @@
 # /// script
-# dependencies = ["numpy"]
+# dependencies = ["numpy", "trimesh", "scipy", "networkx", "rtree"]
 # ///
-"""6-DOF underwater simulation of the Aqua Bots v15 frame (and the old v13 frame for comparison).
+"""6-DOF simulation of the Aqua Bots ROV (Onshape frame + pool noodle), from the part meshes in design/parts.
 
-Geometry comes from the CAD model (massprops.json + part meshes). Everything that is an assumption is in
-ASSUME below: change it when you have measured the real thing (weigh a pod in air and in water, and pull
-one thruster against a luggage scale).
+Axes: x forward (the end without the tether ring, STL -Y), y left (STL +X), z up.
 
-Run:  cad run analysis/sim.py
+Run:  cad run analysis/sim.py                      (PETG, parts flooded, 320 mm noodle, trims from the software)
+      cad run analysis/sim.py --pla --sealed --noodle-len=200 --noodle-hole=20 --no-trim
+
+  --pla            PLA instead of PETG
+  --sealed         air stays trapped in the 15 % gyroid infill (default: parts flooded through drain holes)
+  --noodle-len=MM  pool noodle length (default 320)
+  --noodle-hole=MM hole down the middle of the noodle (default 0: solid, as modelled)
+  --no-trim        motors exactly as wired (v13 original settings)
 """
 import json
 import math
-import struct
 import sys
 from pathlib import Path
 
 import numpy as np
+import trimesh
 
 HERE = Path(__file__).resolve().parent
-RHO = 1000.0          # pool water, kg/m3
-G = 9.81
+sys.path.insert(0, str(HERE))
+import sim_core as sim  # noqa: E402
+from sim_core import ASSUME, RHO, Vehicle, simulate  # noqa: E402
 
-ASSUME = {
-    "pump_motor_kg": 0.300,      # SEAFLO 1100 is ~350 g stock; strainer base cut off
-    "casing_cm3": 92.3,          # measured from motor caseing v1.stl
-    "casing_density": 1.24,      # PLA
-    "print_density": 1.27,       # PETG for the new hull
-    "foam_density": 0.035,       # XPS / closed-cell foam
-    "prop_kg": 0.006, "prop_cm3": 5.0,
-    "camera_kg": 0.035, "camera_cm3": 12.0,
-    "fasteners_kg": 0.025, "fasteners_cm3": 3.2,
-    "wiring_kg": 0.060, "wiring_cm3": 25.0,
-    "thrust_fwd_N": 5.0,         # per thruster, 12 V, 55 mm prop in duct (typical 1100 GPH conversions: 4-7 N)
-    "thrust_rev_N": 3.5,
-    "motor_tau_s": 0.15,
-    "pitch_gain": 0.4,           # config.toml: front motor pitch = 0.4, rear motor pitch = -0.4 (was +-1.0)
-    "target_net_g": 15.0,        # slightly positive: it floats up gently if anything fails
-    "ballast_density": 7.85,     # steel nuts / washers (lead = 11.3)
-    "ballast_packing": 0.55,     # nuts and washers fill about half of a bay
-}
-
-
-# ------------------------------------------------------------------ meshes
-def load_stl(p):
-    b = Path(p).read_bytes()
-    if b[:5] == b"solid" and b"facet" in b[:400]:
-        v = [list(map(float, ln.split()[1:])) for ln in b.decode(errors="ignore").splitlines()
-             if ln.strip().startswith("vertex")]
-        return np.array(v).reshape(-1, 3, 3)
-    n = struct.unpack("<I", b[80:84])[0]
-    dt = np.dtype([("n", "<3f4"), ("v", "<9f4"), ("a", "<u2")])
-    return np.frombuffer(b[84:84 + n * 50], dtype=dt)["v"].reshape(-1, 3, 3).astype(float)
-
-
-def rot_y90(t):            # build123d Rot(0, 90, 0): x' = z, z' = -x
-    out = t.copy(); out[..., 0] = t[..., 2]; out[..., 2] = -t[..., 0]; return out
-
-
-def rot_x180(t):
-    out = t.copy(); out[..., 1] = -t[..., 1]; out[..., 2] = -t[..., 2]; return out
-
-
-def silhouette(tris, axis, pix=3.0):
-    """Pixel centres (mm, in-plane coords) of the mesh's projection along axis."""
-    a, b = [i for i in range(3) if i != axis]
-    P = tris[..., [a, b]]
-    lo = P.reshape(-1, 2).min(0) - pix; hi = P.reshape(-1, 2).max(0) + pix
-    nx, ny = (np.ceil((hi - lo) / pix)).astype(int)
-    grid = np.zeros((nx, ny), bool)
-    gx = lo[0] + (np.arange(nx) + 0.5) * pix
-    gy = lo[1] + (np.arange(ny) + 0.5) * pix
-    for tri in P:
-        x0, y0 = tri.min(0); x1, y1 = tri.max(0)
-        i0, i1 = int((x0 - lo[0]) / pix), int((x1 - lo[0]) / pix) + 1
-        j0, j1 = int((y0 - lo[1]) / pix), int((y1 - lo[1]) / pix) + 1
-        if i1 <= i0 or j1 <= j0:
-            continue
-        X, Y = np.meshgrid(gx[i0:i1], gy[j0:j1], indexing="ij")
-        (ax, ay), (bx, by), (cx, cy) = tri
-        d = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy)
-        if abs(d) < 1e-12:
-            continue
-        l1 = ((by - cy) * (X - cx) + (cx - bx) * (Y - cy)) / d
-        l2 = ((cy - ay) * (X - cx) + (ax - cx) * (Y - cy)) / d
-        inside = (l1 >= -1e-9) & (l2 >= -1e-9) & (l1 + l2 <= 1 + 1e-9)
-        grid[i0:i1, j0:j1] |= inside
-    I, J = np.nonzero(grid)
-    return np.stack([gx[I], gy[J]], 1), pix * pix
-
-
-# ------------------------------------------------------------------ vehicle
-class Vehicle:
-    def __init__(self, name):
-        self.name = name
-        self.items = []        # (label, mass kg, displaced m3, centre mm)
-        self.drag = []         # per axis list of (pts mm (N,3), area mm2, Cd)
-        self.thrusters = []    # (pos mm, dir unit, role)
-        self.entrained = []    # (mass kg, centre mm): water carried inside the flooded hull
-
-    def add(self, label, kg, cm3, c):
-        self.items.append((label, kg, cm3 * 1e-6, np.array(c, float)))
-
-    def add_drag(self, tris, cds, depth_c):
-        for axis in range(3):
-            if cds[axis] <= 0:
-                continue
-            pts2, a = silhouette(tris, axis)
-            others = [i for i in range(3) if i != axis]
-            P = np.zeros((len(pts2), 3)); P[:, others[0]] = pts2[:, 0]; P[:, others[1]] = pts2[:, 1]
-            P[:, axis] = depth_c[axis]
-            self.drag.append((axis, P, a, cds[axis]))
-
-    # ---- statics
-    def statics(self):
-        m = sum(i[1] for i in self.items); V = sum(i[2] for i in self.items)
-        cg = sum(i[1] * i[3] for i in self.items) / m
-        cb = sum(i[2] * i[3] for i in self.items) / V
-        return m, V, cg, cb
-
-    def finish(self):
-        m, V, cg, cb = self.statics()
-        self.m, self.V, self.cg, self.cb = m, V, cg, cb
-        # inertia about CG (point masses + entrained water), kg m2
-        I = np.zeros((3, 3)); mtot = m
-        pts = [(i[1], i[3]) for i in self.items] + list(self.entrained)
-        for mk, c in pts:
-            r = (np.asarray(c) - cg) * 1e-3
-            I += mk * (np.dot(r, r) * np.eye(3) - np.outer(r, r))
-        I += np.diag([0.002, 0.002, 0.002])          # parts' own inertia (shells, motors), small floor
-        me = sum(e[0] for e in self.entrained)
-        self.I = I
-        self.m_inertial = m + me
-        # added mass (rough: box of the outer envelope)
-        Vout = self.V_outer
-        self.MA = np.array([0.15, 0.9, 1.2]) * RHO * Vout
-        self.IA = np.diag(np.diag(I)) * 0.5
-        for k, (axis, P, a, cd) in enumerate(self.drag):
-            self.drag[k] = (axis, (P - cg) * 1e-3, a * 1e-6, cd)
-        self.thr = [((np.asarray(p) - cg) * 1e-3, np.asarray(d, float), role) for p, d, role in self.thrusters]
-
-
-def quat_mul(q, r):
-    w0, x0, y0, z0 = q; w1, x1, y1, z1 = r
-    return np.array([w0*w1 - x0*x1 - y0*y1 - z0*z1, w0*x1 + x0*w1 + y0*z1 - z0*y1,
-                     w0*y1 - x0*z1 + y0*w1 + z0*x1, w0*z1 + x0*y1 - y0*x1 + z0*w1])
-
-
-def quat_to_R(q):
-    w, x, y, z = q
-    return np.array([[1-2*(y*y+z*z), 2*(x*y-w*z), 2*(x*z+w*y)],
-                     [2*(x*y+w*z), 1-2*(x*x+z*z), 2*(y*z-w*x)],
-                     [2*(x*z-w*y), 2*(y*z+w*x), 1-2*(x*x+y*y)]])
-
-
-def euler(q):
-    R = quat_to_R(q)
-    roll = math.degrees(math.atan2(R[2, 1], R[2, 2]))
-    pitch = math.degrees(-math.asin(max(-1, min(1, R[2, 0]))))
-    yaw = math.degrees(math.atan2(R[1, 0], R[0, 0]))
-    return roll, pitch, yaw
+PARTS = HERE.parent / "design" / "parts"
+ARG = {a.split("=")[0]: (a.split("=") + [""])[1] for a in sys.argv[1:]}
+PLA = "--pla" in ARG
+SEALED = "--sealed" in ARG
+NOODLE_L = float(ARG.get("--noodle-len") or 320)
+NOODLE_HOLE = float(ARG.get("--noodle-hole") or 0)
+TRIM = "--no-trim" not in ARG
+DENSITY = 1.24 if PLA else 1.27
+# Bambu Studio, 15 % gyroid, 3 walls, 4 top/bottom layers (print/process_gyroid.json), model only
+WEIGHT_G = {"frame": 216.36, "pod": 100.86, "skid": 169.08} if PLA else {"frame": 213.06, "pod": 99.33, "skid": 166.51}
+SKID_PLASTIC_CM3 = 380.0      # the skid as modelled (100 % infill weighed 483 g PETG in the slicer)
+NOODLE_DENSITY = 0.030        # pool noodle foam, g/cm3
+# SETUP > EXTRAS > FRAME > NEW FRAME in the ROV software (rov.py DEFAULT_DESIGNS "new")
+DESIGN = {"pitch_mix": 0.25, "heave_front": 0.75, "heave_rear": 1.0, "surge_pitch": 0.3}
+if not TRIM:
+    DESIGN = {"pitch_mix": 1.0, "heave_front": 1.0, "heave_rear": 1.0, "surge_pitch": 0.0}
 
 
 def mix(cmd):
-    """rov.py default mixing: left/right = surge +- yaw, front/rear up = heave +- pitch."""
-    s, yw, hv, pt = cmd.get("surge", 0), cmd.get("yaw", 0), cmd.get("heave", 0), cmd.get("pitch", 0)
-    pt = pt * ASSUME["pitch_gain"]
-    out = {"left": s - yw, "right": s + yw, "front": hv + pt, "rear": hv - pt}
+    """rov.py mixing with the design trim."""
+    s, yw, hv, pt = (cmd.get(k, 0.0) for k in ("surge", "yaw", "heave", "pitch"))
+    p = pt * DESIGN["pitch_mix"] + s * DESIGN["surge_pitch"]
+    out = {"left": s - yw, "right": s + yw, "front": hv * DESIGN["heave_front"] + p, "rear": hv * DESIGN["heave_rear"] - p}
     k = max(1.0, *(abs(v) for v in out.values()))
     return {r: v / k for r, v in out.items()}
 
 
-def simulate(veh, cmd_fn, T, q0=(1, 0, 0, 0), dt=0.004, ballast_kg=0.0):
-    v = np.zeros(3); w = np.zeros(3); q = np.array(q0, float); q /= np.linalg.norm(q)
-    pos = np.zeros(3); thrust = {r: 0.0 for *_, r in veh.thr}
-    Mlin = veh.m_inertial + veh.MA
-    Irot = veh.I + veh.IA; Iinv = np.linalg.inv(Irot)
-    rB = (veh.cb - veh.cg) * 1e-3
-    W = veh.m * G; Bf = veh.V * RHO * G
-    log = []
-    steps = int(T / dt)
-    for n in range(steps):
-        t = n * dt
-        R = quat_to_R(q)
-        g_body = R.T @ np.array([0, 0, -1.0])
-        F = W * g_body + Bf * (-g_body)
-        M = np.cross(rB, Bf * (-g_body))
-        cmd = mix(cmd_fn(t))
-        for p, d, role in veh.thr:
-            u = cmd[role]
-            target = (veh.F_fwd if u >= 0 else veh.F_rev) * u
-            thrust[role] += (target - thrust[role]) * dt / veh.tau
-            f = thrust[role] * d
-            F = F + f; M = M + np.cross(p, f)
-        for axis, P, a, cd in veh.drag:
-            u = v[axis] + (np.cross(w, P))[:, axis]
-            f = -0.5 * RHO * cd * a * u * np.abs(u)
-            F[axis] += f.sum()
-            fv = np.zeros((len(P), 3)); fv[:, axis] = f
-            M = M + np.cross(P, fv).sum(0)
-        # rigid body (body frame, origin at CG)
-        vdot = (F - np.cross(w, veh.m_inertial * v)) / Mlin
-        wdot = Iinv @ (M - np.cross(w, Irot @ w))
-        v = v + vdot * dt; w = w + wdot * dt
-        q = q + 0.5 * dt * quat_mul(q, np.array([0, *w])); q /= np.linalg.norm(q)
-        pos = pos + (quat_to_R(q) @ v) * dt
-        if n % int(0.05 / dt) == 0:
-            log.append((t, *pos, *v, *np.degrees(w), *euler(q)))
-    return np.array(log)
+sim.mix = mix
 
 
-# ------------------------------------------------------------------ build the two vehicles
-def pod_mesh():
-    t = load_stl(HERE / "pod.stl")
-    x = t[..., 0]; r = np.hypot(t[..., 1], t[..., 2])
-    prop = np.all((x > -14.2) & (x < -7.8) & (r < 27.7), axis=1)     # the prop disc spins: not a drag surface
-    return t[~prop]
+def tf(v):
+    v = np.asarray(v, float)
+    out = np.empty_like(v)
+    out[..., 0], out[..., 1], out[..., 2] = -v[..., 1], v[..., 0], v[..., 2]
+    return out
 
 
-sys.path.insert(0, str(HERE.parent / "src"))
-from params import NOODLE_D, NOODLE_HOLE, NZ, SY, SZ, VX  # noqa: E402
-
-NOODLE = {"d": NOODLE_D, "hole": NOODLE_HOLE, "density": 0.030,    # pool noodle: PE foam, ~30 kg/m3
-          "y": SY, "z": NZ, "x_min_back": -57.5, "x_min_front": 34.0}   # must cover both saddles
+def load(name):
+    return trimesh.load(PARTS / f"{name}.stl", force="mesh")
 
 
-def noodle_area_mm2():
-    return math.pi / 4 * (NOODLE["d"] ** 2 - NOODLE["hole"] ** 2)
+def vol_c(p):
+    """Outer volume (cm3) and centre; the Onshape export leaves some skid pieces open, so close them or use the hull."""
+    if not p.is_watertight:
+        q = p.copy(); q.fill_holes()
+        if q.is_watertight:
+            p = q
+    if p.is_watertight:
+        return abs(p.volume) / 1000, tf(p.center_mass)
+    h = p.convex_hull
+    return h.volume / 1000, tf(h.center_mass)
 
 
-def new_vehicle(noodle_L=150.0, noodle_x=-11.75, squeeze=0.0):
-    """v15 open frame. squeeze = fraction of noodle volume lost to water pressure at depth."""
-    mp = json.loads((HERE / "massprops.json").read_text())
-    V = Vehicle("v15 (new)")
-    pd = ASSUME["print_density"]
-    V.add("frame", mp["frame"]["vol_cm3"] * pd / 1000, mp["frame"]["vol_cm3"], mp["frame"]["c"])
-    for p in ("pod_front", "pod_rear", "pod_left", "pod_right"):
-        V.add(p + "/casing", ASSUME["casing_cm3"] * ASSUME["casing_density"] / 1000, ASSUME["casing_cm3"], mp[p + "/casing"]["c"])
-        V.add(p + "/motor", ASSUME["pump_motor_kg"], mp[p + "/pump_motor"]["vol_cm3"], mp[p + "/pump_motor"]["c"])
-        V.add(p + "/prop", ASSUME["prop_kg"], ASSUME["prop_cm3"], mp[p + "/prop"]["c"])
-    V.add("camera", ASSUME["camera_kg"], ASSUME["camera_cm3"], (126, 0, 8))
-    V.add("zip ties", ASSUME["fasteners_kg"], ASSUME["fasteners_cm3"], (0, 0, 0))
-    V.add("wiring + splices", ASSUME["wiring_kg"], ASSUME["wiring_cm3"], (0, 0, -45))
-    A = noodle_area_mm2()
-    for sy in (1, -1):
-        vol = A * noodle_L / 1000
-        V.add(f"noodle{sy}", vol * NOODLE["density"] / 1000, vol * (1 - squeeze), (noodle_x, sy * NOODLE["y"], NOODLE["z"]))
-        V.entrained.append((math.pi / 4 * NOODLE["hole"] ** 2 * noodle_L * 1e-6, (noodle_x, sy * NOODLE["y"], NOODLE["z"])))
-    for p in ("pod_front", "pod_rear", "pod_left", "pod_right"):     # water inside the ducts and cages
-        V.entrained.append((0.15, mp[p + "/pump_motor"]["c"]))
-    V.V_outer = 0.249 * 0.245 * 0.165 * 0.55
-    # drag surfaces (each part's own silhouette, overlaps counted twice: errs on the slow side)
-    V.add_drag(load_stl(HERE / "frame.stl"), (1.2, 1.2, 1.2), (0, 0, 0))
-    pod = pod_mesh()
-    for sy in (1, -1):
-        t = pod.copy(); t[..., 0] *= -1; t[..., 1] *= -1; t[..., 0] += 32.5; t[..., 1] += sy * SY; t[..., 2] += SZ
-        V.add_drag(t, (0.8, 1.0, 1.0), (0, sy * SY, SZ))
-    for sx in (1, -1):
-        t = rot_y90(pod); t[..., 0] += sx * VX; t[..., 2] += 32.5
-        V.add_drag(t, (1.0, 1.0, 0.8), (sx * VX, 0, 0))
-    for sy in (1, -1):        # noodles: cylinders along X, ends rounded off with a knife (Cd 0.5 end-on)
-        L = noodle_L; r = NOODLE["d"] / 2; n = 24
-        ang = np.linspace(0, 2 * np.pi, n, endpoint=False)
-        ring = np.stack([np.cos(ang) * r, np.sin(ang) * r], 1)
-        tris = []
-        for i in range(n):
-            a0, a1 = ring[i], ring[(i + 1) % n]
-            for x0 in (-L / 2, L / 2):
-                tris.append([[x0, 0, 0], [x0, a0[0], a0[1]], [x0, a1[0], a1[1]]])
-            tris.append([[-L / 2, a0[0], a0[1]], [L / 2, a0[0], a0[1]], [L / 2, a1[0], a1[1]]])
-            tris.append([[-L / 2, a0[0], a0[1]], [L / 2, a1[0], a1[1]], [-L / 2, a1[0], a1[1]]])
-        t = np.array(tris, float); t[..., 0] += noodle_x; t[..., 1] += sy * NOODLE["y"]; t[..., 2] += NOODLE["z"]
-        V.add_drag(t, (0.5, 1.0, 1.0), (noodle_x, sy * NOODLE["y"], NOODLE["z"]))
-    V.thrusters = [((0, SY, SZ), (1, 0, 0), "left"), ((0, -SY, SZ), (1, 0, 0), "right"),
-                   ((VX, 0, 0), (0, 0, 1), "front"), ((-VX, 0, 0), (0, 0, 1), "rear")]
+def printed(kind, outer_cm3, share=1.0):
+    """(kg, displaced cm3) of a 15 % gyroid print: sealed = it displaces its outer volume; flooded = only its plastic."""
+    g = WEIGHT_G[kind] * share
+    return g / 1000, (outer_cm3 if SEALED else g / DENSITY)
+
+
+def vox_drag(V, mesh, cds, depth_c, pitch=3.0):
+    pts = tf(mesh.voxelized(pitch).points)
+    for axis in range(3):
+        o = [k for k in range(3) if k != axis]
+        uniq = np.unique(np.round(pts[:, o] / pitch).astype(int), axis=0) * pitch
+        P = np.zeros((len(uniq), 3)); P[:, o[0]] = uniq[:, 0]; P[:, o[1]] = uniq[:, 1]; P[:, axis] = depth_c[axis]
+        V.drag.append((axis, P, pitch * pitch, cds[axis]))
+
+
+def build():
+    V = Vehicle("aqua bot (Onshape frame)")
+    frame = load("frame")
+    fv, fc = vol_c(frame)
+    V.add("frame", *printed("frame", fv), fc)
+    pods = {r: load("pod_" + r) for r in ("left", "right", "front", "rear")}
+    for role, p in pods.items():
+        v, c = vol_c(p)
+        V.add(role + "/holster", *printed("pod", v), c)
+        V.add(role + "/motor", ASSUME["pump_motor_kg"], 184.1, c)        # SEAFLO 1100 motor, strainer cut off
+        V.add(role + "/prop", ASSUME["prop_kg"], ASSUME["prop_cm3"], c)
+        V.entrained.append((0.15, c))
+    noodle = load("noodle")
+    nv, nc = vol_c(noodle)
+    nv = nv * NOODLE_L / 200 * (1 - (NOODLE_HOLE / 56) ** 2)            # modelled 56 x 200 mm, solid
+    V.add("pool noodle", nv * NOODLE_DENSITY / 1000, nv, nc)
+    skid = [p for p in load("skid").split(only_watertight=False) if p.extents.max() > 15]   # drop export slivers
+    vs = [vol_c(p) for p in skid]
+    k = SKID_PLASTIC_CM3 / sum(v for v, _ in vs)
+    for (v, c) in vs:
+        V.add("skid", *printed("skid", v * k, v * k / SKID_PLASTIC_CM3), c)
+    front_x = tf(frame.bounds)[:, 0].max()
+    V.add("camera", ASSUME["camera_kg"], ASSUME["camera_cm3"], (front_x - 20, 0, 0))
+    V.add("zip ties / screws", ASSUME["fasteners_kg"], ASSUME["fasteners_cm3"], (0, 0, 0))
+    V.add("wiring + splices", ASSUME["wiring_kg"], ASSUME["wiring_cm3"], (0, 0, -20))
+    allp = tf(np.concatenate([frame.vertices, noodle.vertices, load("skid").vertices] + [p.vertices for p in pods.values()]))
+    V.V_outer = np.prod(allp.max(0) - allp.min(0)) * 1e-9 * 0.45
+    vox_drag(V, frame, (1.2, 1.2, 1.2), (0, 0, 0))
+    for role, p in pods.items():
+        vox_drag(V, p, (0.8, 1.0, 1.0) if role in ("left", "right") else (1.0, 1.0, 0.8), tf(p.bounds.mean(0)))
+    vox_drag(V, noodle, (1.0, 0.9, 0.9), nc)
+    for p in skid:
+        vox_drag(V, p, (1.0, 1.0, 1.0), tf(p.bounds.mean(0)))
+    c = {r: tf(p.bounds.mean(0)) for r, p in pods.items()}
+    V.thrusters = [(c["left"], (1, 0, 0), "left"), (c["right"], (1, 0, 0), "right"),
+                   (c["front"], (0, 0, 1), "front"), (c["rear"], (0, 0, 1), "rear")]
+    sim.setup(V)
     return V
-
-
-def trim_noodles():
-    """Noodle length and position so the robot floats up gently (target_net_g) and sits level.
-    Returns (L, x)."""
-    V0 = new_vehicle(noodle_L=0.0)
-    m, Vd, cg, cb = V0.statics()
-    A = noodle_area_mm2() * 1e-9                         # m3 per mm of length, one piece
-    lift_per_mm = 2 * A * (RHO - NOODLE["density"] * 1000)
-    need = m - Vd * RHO + ASSUME["target_net_g"] / 1000
-    L = need / lift_per_mm
-    # level: sum of (buoyancy - weight) * x = 0
-    mom0 = sum(i[2] * RHO * i[3][0] - i[1] * i[3][0] for i in V0.items)
-    x = -mom0 / (L * lift_per_mm)
-    return L, x
-
-
-def old_vehicle(new):
-    """v13 frame (aqua bots v13(1).stl), forward = its +Y; turned so forward = +X here."""
-    f = load_stl(HERE.parent / "ref" / "aqua_bots_v13.stl")
-    t = f.copy(); t[..., 0] = f[..., 1]; t[..., 1] = -f[..., 0]
-    V = Vehicle("v13 (old)")
-    vol = 273.9
-    V.add("frame", vol * 1.24 / 1000 * 0.6, vol * 0.6, (0, 0, 0))   # printed ~60 % solid
-    pod = pod_mesh()
-    for name, sy in (("left", -91.6), ("right", 91.6)):
-        p = pod.copy(); p[..., 0] += -32.5; p[..., 1] += sy
-        V.add_drag(p, (0.8, 1.0, 1.0), (0, sy, 0))
-    for sx in (100, -100):
-        p = rot_y90(pod); p[..., 0] += sx; p[..., 2] += 2.4 + 32.5
-        V.add_drag(p, (1.0, 1.0, 0.8), (sx, 0, 2.4))
-    for sy in (91.6, -91.6):
-        V.add(f"pod{sy}", ASSUME["pump_motor_kg"] + 0.114 + 0.006, 92.3 + 184 + 5, (0, sy, 0))
-    for sx in (100, -100):
-        V.add(f"podv{sx}", ASSUME["pump_motor_kg"] + 0.114 + 0.006, 92.3 + 184 + 5, (sx, 0, -15))
-    V.add_drag(t, (1.2, 1.2, 1.2), (0, 0, 0))
-    # assume the team floated it neutral with foam on top (unknown); only its steady speeds are compared
-    m, Vd, cg, cb = V.statics()
-    V.add("float (assumed)", 0.0, (m - Vd * RHO) / RHO * 1e6 + 25, (0, 0, 40))
-    V.V_outer = 0.248 * 0.269 * 0.069
-    V.thrusters = [((0, 91.6, 0), (1, 0, 0), "left"), ((0, -91.6, 0), (1, 0, 0), "right"),
-                   ((100, 0, 2.4), (0, 0, 1), "front"), ((-100, 0, 2.4), (0, 0, 1), "rear")]
-    return V
-
-
-def setup(V):
-    V.F_fwd = ASSUME["thrust_fwd_N"]; V.F_rev = ASSUME["thrust_rev_N"]; V.tau = ASSUME["motor_tau_s"]
-    V.finish()
 
 
 def main():
-    if "--pla" in sys.argv:
-        ASSUME["print_density"] = 1.24
-    if "--gain1" in sys.argv:
-        ASSUME["pitch_gain"] = 1.0
-    L, x = trim_noodles()
-    lo, hi = x - L / 2, x + L / 2
-    print("=== v15 trim (pool noodles, no ballast) ===")
-    print(f"noodle pieces: 2 x {L:.0f} mm long, centred at x = {x:+.1f} mm (from {lo:+.0f} to {hi:+.0f})")
-    if lo > NOODLE["x_min_back"] or hi < NOODLE["x_min_front"]:
-        print("!! noodles too short to reach both saddles: need ballast or a thinner noodle")
-    Vn = new_vehicle(L, x); setup(Vn)
-    BG = (Vn.cb - Vn.cg)
-    print(f"mass {Vn.m*1000:.0f} g in air, net {(Vn.V*RHO - Vn.m)*1000:+.0f} g (positive = floats)")
-    print(f"CG ({Vn.cg[0]:.1f}, {Vn.cg[1]:.1f}, {Vn.cg[2]:.1f}) mm   CB ({Vn.cb[0]:.1f}, {Vn.cb[1]:.1f}, {Vn.cb[2]:.1f}) mm")
-    print(f"CB above CG by {BG[2]:.1f} mm; righting moment {Vn.V*RHO*G*BG[2]*1e-3*1000:.0f} mN*m per radian")
-    rest = simulate(Vn, lambda t: {}, 30)
-    r = rest[-1]
-    print(f"at rest after 30 s: roll {r[10]:.1f} deg, pitch {r[11]:.1f} deg, rising {r[6]*100:.1f} cm/s")
-    for depth, sq in ((1.0, 0.04), (3.0, 0.12)):
-        Vd = new_vehicle(L, x, squeeze=sq); setup(Vd)
-        lg = simulate(Vd, lambda t: {}, 20); lg2 = simulate(Vd, lambda t: {"heave": 1}, 20)
-        print(f"at {depth:.0f} m (noodles squeezed ~{sq:.0%}): net {(Vd.V*RHO - Vd.m)*1000:+.0f} g, "
-              f"drifts {lg[-1][6]*100:+.1f} cm/s, full up {lg2[-1][6]:+.2f} m/s")
-
-    Vo = old_vehicle(Vn); setup(Vo)
-
-    def steady(V, cmd, T=25, col=None):
-        lg = simulate(V, lambda t: cmd, T)
-        return lg
-
-    results = {}
-    for V in (Vn, Vo):
-        res = {}
-        lg = steady(V, {"surge": 1}); res["fwd_speed"] = lg[-1][4]; res["fwd_pitch"] = lg[-1][11]
-        t90 = next((row[0] for row in lg if row[4] >= 0.9 * lg[-1][4]), None); res["fwd_t90"] = t90
-        lg = steady(V, {"surge": -1}); res["rev_speed"] = -lg[-1][4]
-        lg = steady(V, {"yaw": 1}); res["yaw_rate"] = abs(lg[-1][9])
-        lg = steady(V, {"heave": 1}); res["up_speed"] = lg[-1][6]; res["up_pitch"] = lg[-1][11]
-        lg = steady(V, {"heave": -1}); res["down_speed"] = -lg[-1][6]
-        lg = steady(V, {"surge": 1, "yaw": 0.5}); res["turn_radius"] = abs(lg[-1][4] / math.radians(lg[-1][9])) if abs(lg[-1][9]) > 0.1 else float("inf")
-        results[V.name] = res
-
-    print("\n=== steady performance (full stick) ===")
-    keys = [("fwd_speed", "forward speed m/s", "{:.2f}"), ("fwd_t90", "time to 90% speed s", "{:.1f}"),
-            ("rev_speed", "reverse speed m/s", "{:.2f}"), ("fwd_pitch", "pitch at full forward deg", "{:+.1f}"),
-            ("yaw_rate", "spin rate deg/s", "{:.0f}"), ("turn_radius", "turn radius (fwd + half yaw) m", "{:.2f}"),
-            ("up_speed", "up speed m/s", "{:.2f}"), ("down_speed", "down speed m/s", "{:.2f}"),
-            ("up_pitch", "pitch while rising deg", "{:+.1f}")]
-    print(f"{'':32s}{'v15 new':>10s}{'v13 old':>10s}")
-    for k, lab, fmt in keys:
-        a = results[Vn.name][k]; b = results[Vo.name][k]
-        print(f"{lab:32s}{fmt.format(a):>10s}{fmt.format(b):>10s}")
-
-    print("\n=== v15 control & stability tests ===")
-    for p in (0.4, 0.6, 1.0):
-        lg = simulate(Vn, lambda t: {"pitch": p}, 15)
+    V = build()
+    net = (V.V * RHO - V.m) * 1000
+    print(f"=== {'PLA' if PLA else 'PETG'}, 15 % gyroid parts {'SEALED (air trapped)' if SEALED else 'FLOODED (drain holes)'}, "
+          f"noodle 56 x {NOODLE_L:.0f} mm{f' with {NOODLE_HOLE:.0f} mm hole' if NOODLE_HOLE else ''}, "
+          f"{'trim: new frame' if TRIM else 'no trim (v13 settings)'} ===")
+    print(f"mass in air {V.m*1000:.0f} g; net {net:+.0f} g ({'floats up' if net > 0 else 'SINKS'})")
+    print(f"centre of buoyancy {V.cb[2]-V.cg[2]:.1f} mm above the centre of gravity, {V.cb[0]-V.cg[0]:+.1f} mm ahead")
+    per_mm = math.pi / 4 * (56 ** 2 - NOODLE_HOLE ** 2) / 1000 * (1 - NOODLE_DENSITY)
+    print(f"noodle: each 1 mm = {per_mm:.2f} g of lift; for +15 g change the length by {(15 - net) / per_mm:+.0f} mm")
+    r = simulate(V, lambda t: {}, 30)[-1]
+    print(f"at rest: roll {r[10]:+.1f} deg, pitch {r[11]:+.1f} deg, drifting {r[6]*100:+.1f} cm/s (+ = up)")
+    res = {}
+    f = simulate(V, lambda t: {"surge": 1}, 25)[-1]; res.update(fwd=f[4], fwd_pitch=f[11])
+    b = simulate(V, lambda t: {"surge": -1}, 25)[-1]; res.update(rev=-b[4], rev_pitch=b[11])
+    u = simulate(V, lambda t: {"heave": 1}, 25)[-1]; res.update(up=u[6], up_pitch=u[11])
+    d = simulate(V, lambda t: {"heave": -1}, 25)[-1]; res.update(down=-d[6], down_pitch=d[11])
+    y = simulate(V, lambda t: {"yaw": 1}, 25)[-1]; res.update(spin=abs(y[9]))
+    t = simulate(V, lambda t: {"surge": 1, "yaw": 0.5}, 25)[-1]; res.update(turn_radius=abs(t[4] / math.radians(t[9])))
+    print("forward {fwd:.2f} m/s (tilt {fwd_pitch:+.1f} deg) | reverse {rev:.2f} m/s ({rev_pitch:+.1f}) | up {up:.2f} m/s "
+          "({up_pitch:+.1f}) | down {down:.2f} m/s ({down_pitch:+.1f}) | spin {spin:.0f} deg/s | turn radius {turn_radius:.2f} m"
+          .format(**res))
+    for p in (0.4, 1.0):
+        lg = simulate(V, lambda t: {"pitch": p}, 15)
         late = [row[11] for row in lg if row[0] > 10]
         flips = max(abs(row[10]) for row in lg) > 120 or max(abs(x) for x in late) > 85
-        print(f"tilt stick at {p:.0%} (pitch mix {ASSUME['pitch_gain']}): " + ("FLIPS OVER (loops)" if flips else f"holds {abs(np.mean(late)):.0f} deg nose {'up' if np.mean(late) > 0 else 'down'}"))
-    lg = simulate(Vn, lambda t: {}, 12, q0=(math.cos(math.radians(45)), math.sin(math.radians(45)), 0, 0))
-    t10 = next((row[0] for row in lg if abs(row[10]) < 10), None); print(f"released on its side (90 deg roll): upright (<10 deg) after {t10:.1f} s")
-    a = math.radians(178) / 2
-    lg = simulate(Vn, lambda t: {}, 20, q0=(math.cos(a), math.sin(a), 0, 0))
-    t10 = next((row[0] for row in lg if abs(row[10]) < 10), None)
-    print(f"released upside down (178 deg): upright after {t10:.1f} s" if t10 else "released upside down: DID NOT RIGHT ITSELF")
-    a = math.radians(30) / 2
-    lg = simulate(Vn, lambda t: {}, 12, q0=(math.cos(a), 0, math.sin(a), 0))
-    t5 = next((row[0] for row in lg if abs(row[11]) < 3), None)
-    settle = next((row[0] for k, row in enumerate(lg) if all(abs(r2[11]) < 3 for r2 in lg[k:])), None)
-    print(f"knocked 30 deg nose-down: settles within 3 deg (for good) after {settle:.1f} s" if settle else "knocked 30 deg: still rocking after 12 s")
-    lg = simulate(Vn, lambda t: {"surge": 1} if t < 8 else {}, 30)
-    stop = next((row[0] - 8 for row in lg if row[0] > 8 and row[4] < 0.2), None)
-    print(f"coasts below 0.2 m/s {stop:.1f} s after letting go of full forward" if stop else "still coasting after 22 s")
-    json.dump({"results": results, "noodle_L_mm": L, "noodle_x_mm": x, "net_g": (Vn.V*RHO - Vn.m)*1000,
-               "BG_mm": BG[2], "mass_g": Vn.m * 1000}, open(HERE / "sim_results.json", "w"), indent=1)
+        print(f"tilt stick {p:.0%}: " + ("FLIPS OVER" if flips else f"holds {abs(np.mean(late)):.0f} deg"))
+    for name, ang, ax in (("on its side", 90, 1), ("upside down", 178, 1), ("nose down 90 deg", 90, 2)):
+        a = math.radians(ang) / 2
+        q0 = (math.cos(a), math.sin(a), 0, 0) if ax == 1 else (math.cos(a), 0, math.sin(a), 0)
+        lg = simulate(V, lambda t: {}, 20, q0=q0)
+        tu = next((row[0] for row in lg if abs(row[10]) < 10 and abs(row[11]) < 10), None)
+        print(f"released {name}: " + (f"upright after {tu:.1f} s" if tu else "DOES NOT RIGHT ITSELF (20 s)"))
+    return {"net_g": net, "mass_g": V.m * 1000, "BG_mm": float(V.cb[2] - V.cg[2]), **{k: float(v) for k, v in res.items()}}
 
 
 if __name__ == "__main__":
-    main()
+    out = main()
+    if "--json" in ARG:
+        print(json.dumps(out))
