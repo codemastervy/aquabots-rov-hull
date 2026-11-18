@@ -1,29 +1,29 @@
-=== v16 trim (pool noodles, no ballast) ===
-noodle pieces: 2 x 126 mm long, centred at x = -25.1 mm (from -88 to +38)
-mass 2203 g in air, net +15 g (positive = floats)
-CG (-25.3, 0.0, -32.0) mm   CB (-25.1, 0.0, 2.1) mm
-CB above CG by 34.1 mm; righting moment 742 mN*m per radian
-at rest after 30 s: roll -0.0 deg, pitch -0.2 deg, rising 7.2 cm/s
-at 1 m (noodles squeezed ~4%): net -15 g, drifts -7.3 cm/s, full up +0.54 m/s
-at 3 m (noodles squeezed ~12%): net -76 g, drifts -16.2 cm/s, full up +0.52 m/s
+=== v17 trim (pool noodles, no ballast) ===
+noodle pieces: 2 x 124 mm long, centred at x = -4.0 mm (from -66 to +58)
+mass 2166 g in air, net +15 g (positive = floats)
+CG (-3.6, 0.0, -32.6) mm   CB (-3.5, 0.0, -16.4) mm
+CB above CG by 16.2 mm; righting moment 346 mN*m per radian
+at rest after 30 s: roll -0.0 deg, pitch 0.1 deg, rising 6.7 cm/s
+at 1 m (noodles squeezed ~4%): net -15 g, drifts -6.6 cm/s, full up +0.53 m/s
+at 3 m (noodles squeezed ~12%): net -75 g, drifts -14.8 cm/s, full up +0.52 m/s
 
 === steady performance (full stick) ===
-                                   v16 new   v13 old
-forward speed m/s                     0.72      0.80
+                                   v17 new   v13 old
+forward speed m/s                     0.74      0.80
 time to 90% speed s                    0.6       0.5
-reverse speed m/s                     0.60      0.67
-pitch at full forward deg             +0.1      +0.8
-spin rate deg/s                        393       403
-turn radius (fwd + half yaw) m        0.13      0.23
-up speed m/s                          0.55      0.75
-down speed m/s                        0.45      0.61
-pitch while rising deg                +0.1      +2.5
+reverse speed m/s                     0.62      0.67
+pitch at full forward deg             +0.8      +0.8
+spin rate deg/s                        388       403
+turn radius (fwd + half yaw) m        0.18      0.23
+up speed m/s                          0.54      0.75
+down speed m/s                        0.44      0.61
+pitch while rising deg                +0.2      +2.5
 
-=== v16 control & stability tests ===
-tilt stick at 40% (pitch mix 0.4): holds 11 deg nose down
-tilt stick at 60% (pitch mix 0.4): holds 16 deg nose down
-tilt stick at 100% (pitch mix 0.4): holds 27 deg nose down
-released on its side (90 deg roll): upright (<10 deg) after 0.4 s
-released upside down (178 deg): upright after 1.2 s
-knocked 30 deg nose-down: settles within 3 deg (for good) after 11.5 s
+=== v17 control & stability tests ===
+tilt stick at 40% (pitch mix 0.25): holds 14 deg nose down
+tilt stick at 60% (pitch mix 0.25): holds 21 deg nose down
+tilt stick at 100% (pitch mix 0.25): holds 38 deg nose down
+released on its side (90 deg roll): upright (<10 deg) after 0.7 s
+released upside down (178 deg): upright after 1.9 s
+knocked 30 deg nose-down: settles within 3 deg (for good) after 9.5 s
 coasts below 0.2 m/s 0.9 s after letting go of full forward

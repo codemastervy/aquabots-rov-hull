@@ -1,7 +1,7 @@
 # /// script
 # dependencies = ["numpy"]
 # ///
-"""6-DOF underwater simulation of the Aqua Bots v15 frame (and the old v13 frame for comparison).
+"""6-DOF underwater simulation of the Aqua Bots v17 frame (and the old v13 frame for comparison).
 
 Geometry comes from the CAD model (massprops.json + part meshes). Everything that is an assumption is in
 ASSUME below: change it when you have measured the real thing (weigh a pod in air and in water, and pull
@@ -34,7 +34,7 @@ ASSUME = {
     "thrust_fwd_N": 5.0,         # per thruster, 12 V, 55 mm prop in duct (typical 1100 GPH conversions: 4-7 N)
     "thrust_rev_N": 3.5,
     "motor_tau_s": 0.15,
-    "pitch_gain": 0.4,           # config.toml: front motor pitch = 0.4, rear motor pitch = -0.4 (was +-1.0)
+    "pitch_gain": 0.25,          # v17 design config pitch_mix (front motor pitch +0.25, rear -0.25)
     "target_net_g": 15.0,        # slightly positive: it floats up gently if anything fails
     "ballast_density": 7.85,     # steel nuts / washers (lead = 11.3)
     "ballast_packing": 0.55,     # nuts and washers fill about half of a bay
@@ -222,23 +222,23 @@ def pod_mesh():
 
 
 sys.path.insert(0, str(HERE.parent / "src"))
-from params import CB, NOODLE_D, NOODLE_HOLE, NY, NZ, SY, SZ, VX, Z_BOT  # noqa: E402
+from params import CB, NOODLE_D, NOODLE_HOLE, NY, NZ, SY, SZ, VX, XR, XS, Z_BOT  # noqa: E402
 
 NOODLE = {"d": NOODLE_D, "hole": NOODLE_HOLE, "density": 0.030,    # pool noodle: PE foam, ~30 kg/m3
-          "y": NY, "z": NZ, "x_min_back": -CB, "x_min_front": CB}   # must cover the saddle
+          "y": NY, "z": NZ, "x_lo": -XS, "x_hi": XS}   # must fit inside the box
 
 
 def noodle_area_mm2():
     return math.pi / 4 * (NOODLE["d"] ** 2 - NOODLE["hole"] ** 2)
 
 
-DESIGN_MIX = {"heave_front": 0.65, "heave_rear": 1.0, "surge_pitch": 0.2}   # = the software's "v16" design config
+DESIGN_MIX = {"heave_front": 1.0, "heave_rear": 0.92, "surge_pitch": 0.27, "pitch_mix": 0.25}   # = the software's "v17" design config
 
 
 def new_vehicle(noodle_L=150.0, noodle_x=-11.75, squeeze=0.0):
-    """v16 classic frame. squeeze = fraction of noodle volume lost to water pressure at depth."""
+    """v17 v13-shape frame. squeeze = fraction of noodle volume lost to water pressure at depth."""
     mp = json.loads((HERE / "massprops.json").read_text())
-    V = Vehicle("v16 (new)")
+    V = Vehicle("v17 (new)")
     V.mixp = DESIGN_MIX
     pd = ASSUME["print_density"]
     V.add("frame", mp["frame"]["vol_cm3"] * pd / 1000, mp["frame"]["vol_cm3"], mp["frame"]["c"])
@@ -246,9 +246,9 @@ def new_vehicle(noodle_L=150.0, noodle_x=-11.75, squeeze=0.0):
         V.add(p + "/casing", ASSUME["casing_cm3"] * ASSUME["casing_density"] / 1000, ASSUME["casing_cm3"], mp[p + "/casing"]["c"])
         V.add(p + "/motor", ASSUME["pump_motor_kg"], mp[p + "/pump_motor"]["vol_cm3"], mp[p + "/pump_motor"]["c"])
         V.add(p + "/prop", ASSUME["prop_kg"], ASSUME["prop_cm3"], mp[p + "/prop"]["c"])
-    V.add("camera", ASSUME["camera_kg"], ASSUME["camera_cm3"], (37, 0, 50))
+    V.add("camera", ASSUME["camera_kg"], ASSUME["camera_cm3"], (51, 0, 66))
     V.add("zip ties", ASSUME["fasteners_kg"], ASSUME["fasteners_cm3"], (0, 0, 0))
-    V.add("wiring + splices", ASSUME["wiring_kg"], ASSUME["wiring_cm3"], (0, 0, -28))
+    V.add("wiring + splices", ASSUME["wiring_kg"], ASSUME["wiring_cm3"], (0, 0, -25))
     A = noodle_area_mm2()
     for sy in (1, -1):
         vol = A * noodle_L / 1000
@@ -256,13 +256,13 @@ def new_vehicle(noodle_L=150.0, noodle_x=-11.75, squeeze=0.0):
         V.entrained.append((math.pi / 4 * NOODLE["hole"] ** 2 * noodle_L * 1e-6, (noodle_x, sy * NOODLE["y"], NOODLE["z"])))
     for p in ("pod_front", "pod_rear", "pod_left", "pod_right"):     # water inside the ducts and cages
         V.entrained.append((0.15, mp[p + "/pump_motor"]["c"]))
-    V.V_outer = 0.26 * 0.26 * 0.107 * 0.55
+    V.V_outer = 0.27 * 0.29 * 0.08 * 0.6
     # drag surfaces (each part's own silhouette, overlaps counted twice: errs on the slow side)
     V.add_drag(load_stl(HERE / "frame.stl"), (1.2, 1.2, 1.2), (0, 0, 0))
     pod = pod_mesh()
     for sy in (1, -1):
-        t = pod.copy(); t[..., 0] *= -1; t[..., 1] *= -1; t[..., 0] += -CB; t[..., 1] += sy * SY; t[..., 2] += SZ
-        V.add_drag(t, (0.8, 1.0, 1.0), (0, sy * SY, SZ))
+        t = pod.copy(); t[..., 0] *= -1; t[..., 1] *= -1; t[..., 0] += XR - CB; t[..., 1] += sy * SY; t[..., 2] += SZ
+        V.add_drag(t, (0.8, 1.0, 1.0), (XR, sy * SY, SZ))
     for sx in (1, -1):
         t = rot_y90(pod); t[..., 0] += sx * VX; t[..., 2] += Z_BOT
         V.add_drag(t, (1.0, 1.0, 0.8), (sx * VX, 0, 0))
@@ -279,7 +279,7 @@ def new_vehicle(noodle_L=150.0, noodle_x=-11.75, squeeze=0.0):
             tris.append([[-L / 2, a0[0], a0[1]], [L / 2, a1[0], a1[1]], [-L / 2, a1[0], a1[1]]])
         t = np.array(tris, float); t[..., 0] += noodle_x; t[..., 1] += sy * NOODLE["y"]; t[..., 2] += NOODLE["z"]
         V.add_drag(t, (0.5, 1.0, 1.0), (noodle_x, sy * NOODLE["y"], NOODLE["z"]))
-    V.thrusters = [((0, SY, SZ), (1, 0, 0), "left"), ((0, -SY, SZ), (1, 0, 0), "right"),
+    V.thrusters = [((XR, SY, SZ), (1, 0, 0), "left"), ((XR, -SY, SZ), (1, 0, 0), "right"),
                    ((VX, 0, 0), (0, 0, 1), "front"), ((-VX, 0, 0), (0, 0, 1), "rear")]
     return V
 
@@ -339,10 +339,10 @@ def main():
         ASSUME["pitch_gain"] = 1.0
     L, x = trim_noodles()
     lo, hi = x - L / 2, x + L / 2
-    print("=== v16 trim (pool noodles, no ballast) ===")
+    print("=== v17 trim (pool noodles, no ballast) ===")
     print(f"noodle pieces: 2 x {L:.0f} mm long, centred at x = {x:+.1f} mm (from {lo:+.0f} to {hi:+.0f})")
-    if lo > NOODLE["x_min_back"] or hi < NOODLE["x_min_front"]:
-        print("!! noodles too short to reach both saddles: need ballast or a thinner noodle")
+    if lo < NOODLE["x_lo"] or hi > NOODLE["x_hi"]:
+        print("!! noodles stick out of the box: move the cross bar (XR) or add ballast")
     Vn = new_vehicle(L, x); setup(Vn)
     BG = (Vn.cb - Vn.cg)
     print(f"mass {Vn.m*1000:.0f} g in air, net {(Vn.V*RHO - Vn.m)*1000:+.0f} g (positive = floats)")
@@ -381,12 +381,12 @@ def main():
             ("yaw_rate", "spin rate deg/s", "{:.0f}"), ("turn_radius", "turn radius (fwd + half yaw) m", "{:.2f}"),
             ("up_speed", "up speed m/s", "{:.2f}"), ("down_speed", "down speed m/s", "{:.2f}"),
             ("up_pitch", "pitch while rising deg", "{:+.1f}")]
-    print(f"{'':32s}{'v16 new':>10s}{'v13 old':>10s}")
+    print(f"{'':32s}{'v17 new':>10s}{'v13 old':>10s}")
     for k, lab, fmt in keys:
         a = results[Vn.name][k]; b = results[Vo.name][k]
         print(f"{lab:32s}{fmt.format(a):>10s}{fmt.format(b):>10s}")
 
-    print("\n=== v16 control & stability tests ===")
+    print("\n=== v17 control & stability tests ===")
     for p in (0.4, 0.6, 1.0):
         lg = simulate(Vn, lambda t: {"pitch": p}, 15)
         late = [row[11] for row in lg if row[0] > 10]

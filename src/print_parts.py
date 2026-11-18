@@ -7,7 +7,7 @@ from bd_materials import plastics
 from bd_materials.processes import fdm
 from cad import model
 
-from rov import frame
+from rov import frame  # v17
 
 
 @model
