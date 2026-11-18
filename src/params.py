@@ -32,14 +32,14 @@ SZ = 0.0
 CB = 13.0                  # cross bar = side ring length: x = -13 .. 13
 PLATE_T = 3.0              # rail / brace / cross bar plates
 DECK_T = 2.4               # top and bottom plates
-RAIL_Y = R_OUT             # rails' outer faces line up with the up/down rings' sides (as on v13)
+RAIL_Y = R_OUT - 0.6       # rails cross into the up/down rings' walls (an exact tangent makes a bad solid)
 FULL_X = 62.0              # rails and braces are full height for |x| < FULL_X, then taper down onto the rings
 BRACE_Y = 55.0             # diamond braces meet the cross bar at y = +-55
 
 # --- pool noodles: two pieces along X, in saddles on top of the cross bar ---
 NOODLE_D = 65.0            # typical 6-7 cm noodle; the saddle takes 55-75
 NOODLE_HOLE = 20.0         # hollow core (0 for a solid noodle)
-NOODLE_L = 120.0           # from analysis/sim.py (see the README); about 3 g of lift per mm per piece
+NOODLE_L = 126.0           # from analysis/sim.py (PETG frame; 124 for PLA); about 3 g of lift per mm per piece
 SADDLE_R = 33.5            # saddle inside radius
 NY = 55.0                  # noodle axis y
 NZ = Z_TOP + 1.0 + SADDLE_R   # noodle axis z (69.2)

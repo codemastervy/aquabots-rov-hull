@@ -93,8 +93,8 @@ def brace_end():
     """Where a diamond brace from the cross bar (x=CB, y=BRACE_Y) touches the front up/down ring (tangent)."""
     px, py = VX - CB, -BRACE_Y           # cross bar end, relative to the ring centre
     d = math.hypot(px, py)
-    a = math.atan2(py, px) + math.acos(R_OUT / d)
-    return VX + R_OUT * math.cos(a), -(R_OUT * math.sin(a))     # (x, y) with y > 0
+    a = math.atan2(py, px) + math.acos((R_OUT - 1.0) / d)       # 1 mm into the ring wall, not tangent
+    return VX + (R_OUT - 1.0) * math.cos(a), -((R_OUT - 1.0) * math.sin(a))
 
 
 def brace(sx, sy):
@@ -129,7 +129,7 @@ def cross_bar():
     c += box(-CB, CB, -SY, SY, Z_BOT, Z_BOT + DECK_T)                         # bottom deck
     for sy in (1, -1):
         c += box(-CB + PLATE_T, CB - PLATE_T, sy * RAIL_Y, sy * SY, -1.2, 1.2)   # web to the side ring
-        c += z_cyl(10.0, Z_BOT, Z_TOP, 0, sy * 30.0)                          # cable tube (v13's round holes)
+        c += z_cyl(10.6, Z_BOT, Z_TOP, 0, sy * 30.0)                          # cable tube (v13's round holes)
     return c
 
 
@@ -236,7 +236,7 @@ def frame():
         f -= side_bore(s)
         f -= x_cyl(POD_OD / 2 + 1.0, -130, -CB, s * SY, SZ)                     # side pod body behind its ring
         f -= x_cyl(R_IN, CB, CB + 60, s * SY, SZ)                               # side pod intake in front
-        f -= x_cyl(SADDLE_R, -90, 90, s * NY, NZ)                               # noodle
+        f -= x_cyl(SADDLE_R - 0.2, -90, 90, s * NY, NZ)                         # noodle (not on the seat face itself)
         f -= z_cyl(7.5, Z_BOT - 1, Z_TOP + 1, 0, s * 30.0)                      # cable tube holes
     sol = f.solids()
     if len(sol) > 1:
@@ -284,7 +284,7 @@ def pod_locations():
     }
 
 
-NOODLE_X = 0.0      # noodle centre: set from analysis/sim.py
+NOODLE_X = -25.1    # noodle centre from analysis/sim.py (the side motors sit behind the cross bar)
 
 
 @model

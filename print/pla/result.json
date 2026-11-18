@@ -1,61 +1,61 @@
 {
     "error_string": "Success.",
-    "export_time": 2389,
+    "export_time": 2144,
     "layer_height": 0.20000000298023224,
     "plate_index": 0,
-    "prepare_time": 9,
+    "prepare_time": 10,
     "return_code": 0,
     "sliced_plates": [
         {
             "feature_type_times": {
-                "Bottom surface": 204.08642578125,
-                "Bridge": 108.37691497802734,
-                "Custom": 34.919715881347656,
-                "Gap infill": 1137.664306640625,
-                "Inner wall": 10352.072265625,
-                "Internal solid infill": 2099.121337890625,
-                "Outer wall": 9782.240234375,
-                "Overhang wall": 74.63088989257813,
-                "Sparse infill": 6241.619140625,
-                "Top surface": 436.42828369140625,
-                "Travel": 7270.6845703125,
-                "Undefined": 7255.07666015625
+                "Bottom surface": 398.19561767578125,
+                "Bridge": 438.0717468261719,
+                "Custom": 34.687538146972656,
+                "Gap infill": 1511.545166015625,
+                "Inner wall": 9460.251953125,
+                "Internal solid infill": 2614.849853515625,
+                "Outer wall": 7703.22216796875,
+                "Overhang wall": 89.62895202636719,
+                "Sparse infill": 5052.6953125,
+                "Top surface": 531.40234375,
+                "Travel": 5237.5146484375,
+                "Undefined": 5222.1123046875
             },
             "filament_change_times": 0,
             "filaments": [
                 {
                     "filament_id": "GFA00",
                     "id": 1,
-                    "main_used_g": 388.184814453125,
-                    "total_used_g": 388.184814453125
+                    "main_used_g": 364.68896484375,
+                    "total_used_g": 364.68896484375
                 }
             ],
-            "generate_support_material_time": 1142,
+            "generate_support_material_time": 753,
             "id": 1,
-            "infill_time": 546,
+            "infill_time": 550,
             "layer_filament_change": 0,
-            "main_predication": 37726.31640625,
-            "make_perimeters_time": 1244,
+            "main_predication": 33043.76953125,
+            "make_perimeters_time": 1102,
             "obj_cached_cnt": 0,
             "objects": [
                 {
                     "bbox": {
-                        "depth": 349.01904296875,
-                        "height": 146.10000610351563,
-                        "width": 348.8035583496094,
-                        "x": 17.450706481933594,
-                        "y": -32.59459686279297,
+                        "depth": 367.98797607421875,
+                        "height": 106.69999694824219,
+                        "width": 367.8817138671875,
+                        "x": -13.9408597946167,
+                        "y": -23.99398422241211,
                         "z": 0.0
                     },
                     "id": 5,
                     "name": "frame.stl",
-                    "triangle_count": 10582
+                    "triangle_count": 13408
                 }
             ],
-            "sliced_time": 5280,
-            "sliced_time_with_cache": 2195,
-            "total_predication": 37745.59765625,
-            "triangle_count": 10582,
+            "sliced_time": 4327,
+            "sliced_time_with_cache": 1774,
+            "total_predication": 33063.0234375,
+            "triangle_count": 13408,
             "warning_message": "It seems object frame.stl has floating regions. Please re-orient the object or enable support generation."
         }
     ],

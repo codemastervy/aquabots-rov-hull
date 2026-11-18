@@ -1,81 +1,95 @@
 {
  "ok": true,
  "path": "57e0a685-ddd5-5b07-8110-d83b3296390d",
- "findings": [],
- "summary": "solved frame/frame of 57e0a685-ddd5-5b07-8110-d83b3296390d: peak 1.1273 MPa, safety factor 35.481",
+ "findings": [
+  {
+   "severity": "warning",
+   "code": "solver_note",
+   "message": "311109 degrees of freedom: expect a slow solve; small features (thin walls, fillets, chamfers) set the mesh here (elements down to 0.0029 mm), so a larger mesh.size_mm won't help much",
+   "location": null,
+   "hint": null,
+   "items": [],
+   "rule": null,
+   "value": null,
+   "limit": null,
+   "unit": null,
+   "op": null,
+   "source": null,
+   "refs": []
+  }
+ ],
+ "summary": "solved frame/frame of 57e0a685-ddd5-5b07-8110-d83b3296390d: peak 1.5238 MPa, safety factor 26.25",
  "measurements": {
-  "max_von_mises_MPa": 1.1273,
-  "max_von_mises_gauss_MPa": 1.0955,
+  "max_von_mises_MPa": 1.5238,
+  "max_von_mises_gauss_MPa": 1.471,
   "max_von_mises_at_mm": [
-   23.5,
+   -55.0,
    2.0,
-   35.013
+   -29.745
   ],
   "yield_MPa": 40.0,
-  "max_displacement_mm": 0.022198,
+  "max_displacement_mm": 0.060662,
   "max_displacement_at_mm": [
-   20.0,
+   -55.0,
    19.0,
    72.0
   ],
   "applied_force_N": [
    0.0,
    0.0,
-   42.0
+   44.0
   ],
   "reaction_force_N": [
-   -0.0,
    0.0,
-   -42.0
+   -0.0,
+   -44.0
   ],
-  "deformation_scale": 850.0,
-  "safety_factor": 35.481,
+  "deformation_scale": 320.0,
+  "safety_factor": 26.25,
   "checks": [
    {
     "kind": "stress",
     "label": "Strength",
-    "value": 1.1273,
+    "value": 1.5238,
     "limit": 40.0,
     "unit": "MPa",
-    "ratio": 0.028184,
+    "ratio": 0.038095,
     "close_at": 0.5,
     "margin": 2.0,
     "status": "passes",
     "where": {
-     "ref": "frame/f:frame.f_kelhgg~4a14305be886",
+     "ref": "frame/f:frame.f_ddfpof_fuse2~299989887be7",
      "at": [
-      23.5,
+      -55.0,
       2.0,
-      35.013
+      -29.745
      ]
     }
    }
   ],
   "mesh": {
-   "elements": 20540,
-   "straightened": 2,
-   "nodes": 45673,
-   "dofs": 137019,
-   "size_mm": 9.4629,
+   "elements": 53266,
+   "straightened": 14,
+   "nodes": 103703,
+   "dofs": 311109,
+   "size_mm": 9.6003,
    "order": 2,
    "mesher": "netgen",
    "solver": "calculix 2.23 (C3D10)"
   },
   "timings": {
-   "mesh_s": 3.473,
-   "solve_s": 3.242,
-   "stress_s": 0.014
+   "mesh_s": 8.523,
+   "solve_s": 13.617,
+   "stress_s": 0.039
   },
   "study": {
    "fixtures": [
     {
      "faces": [
-      "frame/f:frame.f_kelhgg2~ce15471948a1",
-      "frame/f:frame.f_kelhgg~4a14305be886",
-      "frame/f:frame.f_gcakgn2~63c7a262238f",
-      "frame/f:frame.f_gcakgn2~14aa6a1ac46f",
-      "frame/f:frame.f_gcakgn~d3eae1c6538c",
-      "frame/f:frame.f_gcakgn~47f7971df345"
+      "frame/f:frame.f_fpihhf~3820b1cf2fc3",
+      "frame/f:frame.f_fpihhf2~40639ac7e5d5",
+      "frame/f:frame.f_gnnngo_make_cylinder1.1;M:frame.f_gnnngo",
+      "frame/f:frame.f_gnnngo2~ba9b56eedad4"
      ],
      "type": "fixed"
     }
@@ -83,14 +97,14 @@
    "loads": [
     {
      "faces": [
-      "frame/f:tether_tower.t_eapobj~f2ff17693768",
-      "frame/f:tether_tower.t_oahkki~81f96cee2650"
+      "frame/f:tether_post.t_hkafjc~d9b37b7cf760",
+      "frame/f:tether_post.t_hkafjc2~3ff4f4a1c4a4"
      ],
      "type": "force",
      "vector_N": [
       0,
       0,
-      42
+      44
      ]
     }
    ],
@@ -113,18 +127,16 @@
   "fixtures": [
    {
     "faces": [
-     "frame/f:frame.f_kelhgg2~ce15471948a1",
-     "frame/f:frame.f_kelhgg~4a14305be886",
-     "frame/f:frame.f_gcakgn2~63c7a262238f",
-     "frame/f:frame.f_gcakgn2~14aa6a1ac46f",
-     "frame/f:frame.f_gcakgn~d3eae1c6538c",
-     "frame/f:frame.f_gcakgn~47f7971df345"
+     "frame/f:frame.f_fpihhf~3820b1cf2fc3",
+     "frame/f:frame.f_fpihhf2~40639ac7e5d5",
+     "frame/f:frame.f_gnnngo_make_cylinder1.1;M:frame.f_gnnngo",
+     "frame/f:frame.f_gnnngo2~ba9b56eedad4"
     ],
     "type": "fixed",
     "reaction_N": [
-     -0.0,
      0.0,
-     -42.0
+     -0.0,
+     -44.0
     ]
    }
   ],
@@ -132,82 +144,62 @@
   "overlaps": [],
   "refined": null,
   "named_faces": {
-   "frame/f:frame.f_kelhgg2~ce15471948a1": {
-    "ref": "frame/f:frame.f_kelhgg2~ce15471948a1",
-    "ordinal": 149,
-    "area": 12420.65307702851,
+   "frame/f:frame.f_fpihhf~3820b1cf2fc3": {
+    "ref": "frame/f:frame.f_fpihhf~3820b1cf2fc3",
+    "ordinal": 297,
+    "area": 3957.464265727063,
     "center": [
-     -61.949410621773204,
-     -0.05058937822678811,
-     -8.610272201265913
+     7.282343295432118e-15,
+     96.0,
+     -9.69340567062483
     ]
    },
-   "frame/f:frame.f_kelhgg~4a14305be886": {
-    "ref": "frame/f:frame.f_kelhgg~4a14305be886",
-    "ordinal": 49,
-    "area": 12420.653077028515,
+   "frame/f:frame.f_fpihhf2~40639ac7e5d5": {
+    "ref": "frame/f:frame.f_fpihhf2~40639ac7e5d5",
+    "ordinal": 312,
+    "area": 3957.4642657270606,
     "center": [
-     61.9494106217732,
-     -0.05058937822679521,
-     -8.610272201265936
+     5.870222239747367e-15,
+     -96.00000000000001,
+     -9.693405670624845
     ]
    },
-   "frame/f:frame.f_gcakgn2~63c7a262238f": {
-    "ref": "frame/f:frame.f_gcakgn2~63c7a262238f",
-    "ordinal": 322,
-    "area": 2494.982264150982,
+   "frame/f:frame.f_gnnngo_make_cylinder1.1;M:frame.f_gnnngo": {
+    "ref": "frame/f:frame.f_gnnngo_make_cylinder1.1;M:frame.f_gnnngo",
+    "ordinal": 123,
+    "area": 5183.130503630633,
     "center": [
-     27.0,
-     -81.84500493754857,
-     -11.555747299564825
+     94.90844469247875,
+     -1.3533515903447563e-14,
+     -21.856579735811422
     ]
    },
-   "frame/f:frame.f_gcakgn2~14aa6a1ac46f": {
-    "ref": "frame/f:frame.f_gcakgn2~14aa6a1ac46f",
-    "ordinal": 396,
-    "area": 2506.9909375646544,
+   "frame/f:frame.f_gnnngo2~ba9b56eedad4": {
+    "ref": "frame/f:frame.f_gnnngo2~ba9b56eedad4",
+    "ordinal": 56,
+    "area": 5183.130505156616,
     "center": [
-     -50.5,
-     -82.0,
-     -11.404006671323362
+     -94.90844469250571,
+     1.4657435677982755e-14,
+     -21.856579744090617
     ]
    },
-   "frame/f:frame.f_gcakgn~d3eae1c6538c": {
-    "ref": "frame/f:frame.f_gcakgn~d3eae1c6538c",
-    "ordinal": 498,
-    "area": 2494.9822641509827,
-    "center": [
-     27.000000000000004,
-     81.84500493754857,
-     -11.55574729956481
-    ]
-   },
-   "frame/f:frame.f_gcakgn~47f7971df345": {
-    "ref": "frame/f:frame.f_gcakgn~47f7971df345",
-    "ordinal": 436,
-    "area": 2506.9909375646553,
-    "center": [
-     -50.5,
-     82.00000000000001,
-     -11.404006671323348
-    ]
-   },
-   "frame/f:tether_tower.t_eapobj~f2ff17693768": {
-    "ref": "frame/f:tether_tower.t_eapobj~f2ff17693768",
-    "ordinal": 11,
+   "frame/f:tether_post.t_hkafjc~d9b37b7cf760": {
+    "ref": "frame/f:tether_post.t_hkafjc~d9b37b7cf760",
+    "ordinal": 804,
     "area": 942.4777960769381,
     "center": [
-     -8.104524521655171e-16,
+     -35.0,
      -4.999999999999999,
      67.22535170724315
     ]
    },
-   "frame/f:tether_tower.t_oahkki~81f96cee2650": {
-    "ref": "frame/f:tether_tower.t_oahkki~81f96cee2650",
-    "ordinal": 13,
+   "frame/f:tether_post.t_hkafjc2~3ff4f4a1c4a4": {
+    "ref": "frame/f:tether_post.t_hkafjc2~3ff4f4a1c4a4",
+    "ordinal": 806,
     "area": 502.65482457436684,
     "center": [
-     -1.4489193548889357e-15,
+     -35.0,
      12.0,
      69.45352091052968
     ]
