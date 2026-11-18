@@ -17,8 +17,16 @@ It uses the same four thrusters as the current robot: modified SEAFLO SFBP1-G110
 | Mass in air | about 2.2 kg with pods, camera and wiring |
 | Trim | slightly positive at the surface (+15 g); level; self-rights |
 
-The previous design (v14: flooded streamlined hull with foam and steel ballast) is on the
-[`v14-flooded-hull`](../../tree/v14-flooded-hull) branch.
+**All designs, one branch each (pick one):**
+
+| Design | Branch | Look | Filament (PETG) | Speed fwd | Upright from upside down |
+|---|---|---|---|---|---|
+| v15 open frame | `main` (this page) | open frame, noodles on top | 382 g | 0.70 m/s | 1.2 s |
+| v16 classic | [`v16-classic`](../../tree/v16-classic) | v13 shape, noodles in saddles on top | 359 g | 0.72 m/s | 1.2 s |
+| v17 v13 shape | [`v17-v13-shape`](../../tree/v17-v13-shape) | v13 shape, noodles hidden inside | 325 g | 0.74 m/s | 1.9 s |
+| v14 flooded hull | [`v14-flooded-hull`](../../tree/v14-flooded-hull) | streamlined hull, foam + steel ballast | see branch | see branch | see branch |
+
+On the control screen, pick the design you built under **SETUP > DESIGN**. It sets that design's motor trim.
 
 ## Why this design
 
@@ -97,7 +105,7 @@ Noodle foam squashes with depth (about 4% at 1 m, 12% at 3 m). The robot becomes
 so pull it back on the tether. In a school pool (≤ 2 m) this doesn't matter.
 
 ### 6. Software
-Set the pitch mix on the front/rear motors to **±0.4** in `config.toml`, the same as for v14. At full pitch gain
+Pick **v15 open frame** under SETUP > DESIGN on the control screen. It sets the pitch mix to **0.4**, the same as for v14. At full pitch gain
 (1.0) a full-tilt stick flips the robot over. At 0.4 a full stick holds about 20° of tilt. Nothing else changes.
 (The autopilot stays off the controller, as before.)
 
